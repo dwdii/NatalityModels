@@ -1,0 +1,94 @@
+---
+title: "Final Project Proposal"
+author: "Daniel Dittenhafer & Justin Hink"
+date: "March 1, 2016"
+documentclass: article 
+geometry: margin=0.75in
+output: 
+  pdf_document:
+    number_sections: yes
+subtitle: "DATA 621: Business Analytics and Data Mining"
+---
+```{r, echo=FALSE, message=FALSE}
+library(knitr)
+library(knitcitations)
+library(RefManageR)
+
+cleanbib()
+
+cite_options(style="markdown")
+
+bibBirthData <- bibentry(bibtype="Misc",
+                         author=person(family="HHS"),
+                         publisher="United States Department of Health and Human Services (US DHHS), Centers for Disease Control and Prevention (CDC), National Center for Health Statistics (NCHS), Division of Vital Statistics",
+                         title="Natality public-use data 2007-2014 on CDC WONDER Online Database",
+                         year=2016,
+                         month="February",
+                         url="http://wonder.cdc.gov/natality-current.html")
+
+bibBirthData06 <- bibentry(bibtype="Misc",
+                         author=person(family="HHS"),
+                         publisher="United States Department of Health and Human Services (US DHHS), Centers for Disease Control and Prevention (CDC), National Center for Health Statistics (NCHS), Division of Vital Statistics",
+                         title="Natality public-use data 2003-2006 on CDC WONDER Online Database",
+                         year=2009,
+                         month="March",
+                         url="http://wonder.cdc.gov/natality-v2006.html")
+
+bibSpMorg21 <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Morgan", given="S.", middle="Philip"), 
+                                   person(family="Miles", given="G.", middle="Taylor")),
+                 journal="Annual Review of Sociology",
+                 title="Low Fertility at the Turn of the Twenty-First Century",
+                 year=2006,
+                 month="August",
+                 url="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2849172/")
+```
+
+# Data Set
+
+The data sets we plan to use originate from United States federal government agencies. The core data comes from the U.S. Department of Health & Human Services Centers for Disease Control and Prevention  `r citep(bibBirthData)`. Related population and economic data sets will come from the U.S. Census Bureau and the U.S. Bureau of Labor Statistics.
+
+
+## Natality Data
+
+Separate data sets the years 2003-2006, and 2007-2014 were downloaded from the CDC website `r citep(bibBirthData06)`, `r citep(bibBirthData)`.
+
+```{r, echo=FALSE}
+dfNatality <- c("Year", "Month",	"Age of Mother",	"Marital Status",	"Education",	"Births")
+kable(dfNatality)
+```
+
+##  Census Data
+
+**TBD: Data set descriptions**
+
+
+## Unemployment Data
+
+**TBD: Data set descriptions**
+
+
+# Recent Journal Papers
+
+**TBD**
+
+## Low Fertility at the Turn of the Twenty-First Century
+
+The Annual Review of Sociology included a paper by S. Philip Morgan and Miles G. Taylor regarding recent  fertility trends, specifically a shift to lower birth rates as compared to the second half of the twentieth century `r citep(bibSpMorg21)`.
+
+# Problem Statement & Research Questions
+
+**TBD**
+
+# Statement of Objectives
+
+**TBD**
+
+
+# References
+
+```{r, results='asis', echo=FALSE}
+BibOptions(style="html", bib.style="authortitle")
+bibliography()
+```
+
