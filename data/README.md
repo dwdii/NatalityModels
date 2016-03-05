@@ -10,4 +10,8 @@ Acquired March 1, 2016
 
 #### Natality, 2003-2006.txt
 
-Same as above
+http://wonder.cdc.gov/natality-v2006.html
+
+Group Results By: Year, Month, Age of Mother, Marital Status, Education
+All Years
+Acquired March 1, 2016
