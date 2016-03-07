@@ -115,6 +115,18 @@ Through an initial search of journals and papers, a unified model of birth count
 
 Using monthly census estimates, unemployment rates, and birth demographic data from the CDC, we will develop a series of regression models to forecast birth counts. 
 
+## Variables
+
+We expect to examine and may incorporated the following variables into the model(s) as separate terms:
+
+* Month Census Estimate of United States Population
+* Proportion of women age 20-24, 25-29, 30-34, 35-39
+* Unemployment Rate
+* ...
+
+
+## Evaluation
+
 We plan to withhold approximately 20% of the historical data to be used in a cross validation step for assessing the performance of the models via mean squared error, along with other standard measures including adjusted \(R^2\) and model complexity (# of variables), 
 
 

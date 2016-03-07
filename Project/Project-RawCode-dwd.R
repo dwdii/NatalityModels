@@ -43,3 +43,5 @@ summary(birthData)
 
 birthData2 <- loadBirthData("Natality, 2003-2006.txt")
 summary(birthData2)
+
+
