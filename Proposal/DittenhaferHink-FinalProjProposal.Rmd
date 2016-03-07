@@ -42,6 +42,29 @@ bibSpMorg21 <- bibentry(bibtype="Misc",
                  year=2006,
                  month="August",
                  url="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2849172/")
+
+bibMathDemo <- bibentry(bibtype="Book",
+                 title="Mathematical demography : selected papers",
+                 author=personList(person(family="Smith", given="David"),
+                                   person(family="Keyfitz", given="Nathan")),
+                 year=2013,
+                 publisher="Demographic Research Monographs")
+                 
+# bibCausesLowFertility <- bibentry(bibtype="Article",
+#                                   title="Whither the Child? Causes and Consequences of Low Fertility",
+#                                   journal="Population and Development Review",
+#                                   year=2014,
+#                                   editor=personList(person(family="Kaufmann", given="Eric"),
+#                                                     person(family="Wilcox", given="W. Bradford")))
+
+bibRelWage <- bibentry(bibtype="Article",
+                 title="Relative Wage Changes and Fertility in the US",
+                 author=person(family="Amialchuk", given="Aliaksandr"),
+                 journal="Eastern Economic Journal",
+                 year=2013,
+                 doi="10.1057/eej.2013.2",
+                 volume="39(2)")
+                                   
 ```
 
 # Data Set
@@ -74,7 +97,11 @@ kable(dfNatality)
 
 ## Low Fertility at the Turn of the Twenty-First Century
 
-The Annual Review of Sociology included a paper by S. Philip Morgan and Miles G. Taylor regarding recent  fertility trends, specifically a shift to lower birth rates as compared to the second half of the twentieth century `r citep(bibSpMorg21)`.
+The Annual Review of Sociology included a paper by S. Philip Morgan and Miles G. Taylor regarding recent fertility trends, specifically a shift to lower birth rates as compared to the second half of the twentieth century `r citep(bibSpMorg21)`.
+
+## Relative Wage Changes and Fertility in the US
+
+The Eastern Economic Journal included a paper by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. 
 
 # Problem Statement & Research Questions
 
