@@ -64,12 +64,16 @@ bibRelWage <- bibentry(bibtype="Article",
                  year=2013,
                  doi="10.1057/eej.2013.2",
                  volume="39(2)")
+
+# http://www.demographic-research.org/ is a peer-reviewed, open-access journal of population sciences 
+
+# http://www.demographicintel.com/ is a company that sells reports
                                    
 ```
 
 # Data Set
 
-The data sets we plan to use originate from United States federal government agencies. The core data comes from the U.S. Department of Health & Human Services Centers for Disease Control and Prevention  `r citep(bibBirthData)`. Related population and economic data sets will come from the U.S. Census Bureau and the U.S. Bureau of Labor Statistics.
+The data sets we plan to use originate from United States federal government agencies. The core data comes from the U.S. Department of Health & Human Services Centers for Disease Control and Prevention  `r citep(bibBirthData)`. Related population and economic data sets will come from the U.S. Census Bureau, the U.S. Bureau of Labor Statistics, and potentially others.
 
 
 ## Natality Data
@@ -101,15 +105,17 @@ The Annual Review of Sociology included a paper by S. Philip Morgan and Miles G.
 
 ## Relative Wage Changes and Fertility in the US
 
-The Eastern Economic Journal included a paper by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. 
+The Eastern Economic Journal included a paper by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. Across all women, women's education, men's education, men's earnings and metro area were all found to be significant in age-specific fertility regression. Married women's wages were found to negatively affect fertility at younger ages (20-24), and positively affect fertility at older ages (30-39).
 
 # Problem Statement & Research Questions
 
-**TBD**
+Through an initial search of journals and papers, a unified model of birth count activity for the United States is not readily available. More focused research into migration effects, wage effects, etc do appear but a meta-model is elusive. Using national aggregate data (surveys, statistics, census), how can the number of births be forecast? What factors are significant which could be used as predictors, assuming trends hold (no major cultural shifts)? 
 
 # Statement of Objectives
 
-**TBD**
+Using monthly census estimates, unemployment rates, and birth demographic data from the CDC, we will develop a series of regression models to forecast birth counts. 
+
+We plan to withhold approximately 20% of the historical data to be used in a cross validation step for assessing the performance of the models via mean squared error, along with other standard measures including adjusted \(R^2\) and model complexity (# of variables), 
 
 
 # References
