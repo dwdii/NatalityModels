@@ -1,7 +1,7 @@
 ---
 title: "Final Project Proposal"
 author: "Daniel Dittenhafer & Justin Hink"
-date: "March 1, 2016"
+date: "March 9, 2016"
 documentclass: article 
 geometry: margin=0.75in
 output: 
@@ -100,11 +100,11 @@ The data sets we plan to use originate from United States federal government age
 
 ## Natality Data
 
-Separate data sets the years 2003-2006, and 2007-2014 were downloaded from the CDC website `r citep(bibBirthData06)`, `r citep(bibBirthData)`.
+Separate data sets for the years 2003-2006, and 2007-2014 were downloaded from the CDC website `r citep(bibBirthData06)`, `r citep(bibBirthData)`.
 
 ```{r, echo=FALSE}
 dfNatality <- c("Year", "Month",	"Age of Mother",	"Marital Status",	"Education",	"Births")
-kable(dfNatality)
+kable(t(dfNatality))
 ```
 
 ##  Census Data
@@ -113,7 +113,7 @@ Census data will be incorporated and joined to the natality data.  Specifically 
 
 ```{r, echo=FALSE}
 dfCens <- c("Year", "Month",  "Age Bucket", "Proportion of US Population")
-kable(dfCens)
+kable(t(dfCens))
 ```
 
 ## Unemployment Data
@@ -122,7 +122,7 @@ Unemployment data for given month/year pairs will be used.  The hypothesis here 
 
 ```{r, echo=FALSE}
 dfURate <- c("Year", "Month",  "uRate")
-kable(dfURate)
+kable(t(dfURate))
 ```
 
 # Recent Journal Papers
