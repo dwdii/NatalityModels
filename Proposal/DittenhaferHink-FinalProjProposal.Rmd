@@ -34,6 +34,22 @@ bibBirthData06 <- bibentry(bibtype="Misc",
                          month="March",
                          url="http://wonder.cdc.gov/natality-v2006.html")
 
+bibUnemployment<- bibentry(bibtype="Misc",
+                         author=person(family="BLS"),
+                         publisher="Bureau of Labor and Statistics",
+                         title="Labor Force Statistics from the Current Population Survey",
+                         year=2016,
+                         month="February",
+                         url="http://data.bls.gov/timeseries/LNS14000000")
+
+bibCensus<- bibentry(bibtype="Misc",
+                         author=person(family="USCS"),
+                         publisher="United States Census Bureau",
+                         title="Relevant Census Data",
+                         year=2016,
+                         month="February",
+                         url="https://www.census.gov/econ/cbp/download/")
+
 bibSpMorg21 <- bibentry(bibtype="Misc",
                  author=personList(person(family="Morgan", given="S.", middle="Philip"), 
                                    person(family="Miles", given="G.", middle="Taylor")),
@@ -70,11 +86,17 @@ bibRelWage <- bibentry(bibtype="Article",
 # http://www.demographicintel.com/ is a company that sells reports
                                    
 ```
+# Problem Statement & Research Questions
+
+Through an initial search of journals and papers, a unified model of birth count activity for the United States is not readily available. More focused research into migration effects, wage effects, etc do appear but a meta-model is elusive. Using national aggregate data (surveys, statistics, census), how can the number of births be forecast? What factors are significant which could be used as predictors, assuming trends hold (no major cultural shifts)? 
+
+# Statement of Objectives
+
+Using monthly census estimates, unemployment rates, and birth demographic data from the CDC, we will develop a series of regression models to forecast birth counts. From this series of models, a single, best model will be recommended for future use.
 
 # Data Set
 
 The data sets we plan to use originate from United States federal government agencies. The core data comes from the U.S. Department of Health & Human Services Centers for Disease Control and Prevention  `r citep(bibBirthData)`. Related population and economic data sets will come from the U.S. Census Bureau, the U.S. Bureau of Labor Statistics, and potentially others.
-
 
 ## Natality Data
 
@@ -87,17 +109,23 @@ kable(dfNatality)
 
 ##  Census Data
 
-**TBD: Data set descriptions**
+Census data will be incorporated and joined to the natality data.  Specifically we are interested in whether female only age group population (as expressed as a proportion of the overall US population) has a dicernable effect on fertility rates.
 
+```{r, echo=FALSE}
+dfCens <- c("Year", "Month",  "Age Bucket", "Proportion of US Population")
+kable(dfCens)
+```
 
 ## Unemployment Data
 
-**TBD: Data set descriptions**
+Unemployment data for given month/year pairs will be used.  The hypothesis here is that unemployment rate will have some predictive power when it comes to predicting birth rates.  The unemployment data used in this study is sourced from the BLS website `r citep(bibUnemployment)`.
 
+```{r, echo=FALSE}
+dfURate <- c("Year", "Month",  "uRate")
+kable(dfURate)
+```
 
 # Recent Journal Papers
-
-**TBD**
 
 ## Low Fertility at the Turn of the Twenty-First Century
 
@@ -106,24 +134,6 @@ The Annual Review of Sociology included a paper by S. Philip Morgan and Miles G.
 ## Relative Wage Changes and Fertility in the US
 
 The Eastern Economic Journal included a paper by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. Across all women, women's education, men's education, men's earnings and metro area were all found to be significant in age-specific fertility regression. Married women's wages were found to negatively affect fertility at younger ages (20-24), and positively affect fertility at older ages (30-39).
-
-# Problem Statement & Research Questions
-
-Through an initial search of journals and papers, a unified model of birth count activity for the United States is not readily available. More focused research into migration effects, wage effects, etc do appear but a meta-model is elusive. Using national aggregate data (surveys, statistics, census), how can the number of births be forecast? What factors are significant which could be used as predictors, assuming trends hold (no major cultural shifts)? 
-
-# Statement of Objectives
-
-Using monthly census estimates, unemployment rates, and birth demographic data from the CDC, we will develop a series of regression models to forecast birth counts. 
-
-## Variables
-
-We expect to examine and may incorporated the following variables into the model(s) as separate terms:
-
-* Month Census Estimate of United States Population
-* Proportion of women age 20-24, 25-29, 30-34, 35-39
-* Unemployment Rate
-* ...
-
 
 ## Evaluation
 
