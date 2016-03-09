@@ -50,6 +50,15 @@ bibCensus<- bibentry(bibtype="Misc",
                          month="February",
                          url="https://www.census.gov/econ/cbp/download/")
 
+bibEarnings<- bibentry(bibtype="Misc",
+                         author=person(family="BLS"),
+                         publisher="Bureau of Labor and Statistics",
+                         title="Labor Force Statistics from the Current Population Survey",
+                         year=2016,
+                         month="March",
+                         url="http://www.bls.gov/cps/earnings.htm")
+
+
 bibSpMorg21 <- bibentry(bibtype="Misc",
                  author=personList(person(family="Morgan", given="S.", middle="Philip"), 
                                    person(family="Miles", given="G.", middle="Taylor")),
@@ -109,7 +118,7 @@ kable(t(dfNatality))
 
 ##  Census Data
 
-Census data will be incorporated and joined to the natality data.  Specifically we are interested in whether female only age group population (as expressed as a proportion of the overall US population) has a dicernable effect on fertility rates.
+Census data will be incorporated and joined to the natality data.  Specifically we are interested in whether female only age group population (as expressed as a proportion of the overall US population) has a discernable effect on fertility rates.
 
 ```{r, echo=FALSE}
 dfCens <- c("Year", "Month",  "Age Bucket", "Proportion of US Population")
@@ -123,6 +132,15 @@ Unemployment data for given month/year pairs will be used.  The hypothesis here 
 ```{r, echo=FALSE}
 dfURate <- c("Year", "Month",  "uRate")
 kable(t(dfURate))
+```
+
+## Earnings Data
+
+We expect to also look at Bureau of Labor Statistics Current Population Survey data related to earnings, particularly female earnings `r citep(bibEarnings)`. 
+
+```{r, echo=FALSE}
+dfEarnings <- c("Year", "Quarter",  "Weekly Earnings")
+kable(t(dfEarnings))
 ```
 
 # Recent Journal Papers
