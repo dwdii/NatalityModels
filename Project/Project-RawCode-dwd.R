@@ -14,9 +14,9 @@ loadBirthData <- function(filename)
                           stringsAsFactors=FALSE,
                           colClasses=c('character', # Notes
                                        'character', # Year
-                                       'numeric',   # Year.Code
+                                       'character',   # Year.Code
                                        'character', # Month
-                                       'numeric',   # Month.Code
+                                       'character',   # Month.Code
                                        'character', # Age of Mother
                                        'character', # Age of Mother Code
                                        'character', # Marital Status
@@ -34,6 +34,12 @@ loadBirthData <- function(filename)
                                                                     Year.Code, 
                                                                     Month.Code), 
                                                             orders="ymd"))
+  
+  birthDataWoNa$Month.Code <- as.numeric(birthDataWoNa$Month.Code)
+  birthDataWoNa$Age.of.Mother <- as.factor(birthDataWoNa$Age.of.Mother)
+  birthDataWoNa$Marital.Status <- as.factor(birthDataWoNa$Marital.Status)
+  birthDataWoNa$Education <- as.factor(birthDataWoNa$Education)
+  
   return (birthDataWoNa)
 }
 
@@ -44,4 +50,13 @@ summary(birthData)
 birthData2 <- loadBirthData("Natality, 2003-2006.txt")
 summary(birthData2)
 
+allBirthData <- rbind(birthData, birthData2)
 
+lmCdc <- lm(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
+summary(lmCdc)
+
+#library(leaps)
+#lmSubsCdc <- leaps::regsubsets(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
+#summary(lmSubsCdc)
+
+#step(lmCdc)
