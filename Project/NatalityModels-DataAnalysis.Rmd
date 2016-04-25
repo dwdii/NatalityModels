@@ -63,7 +63,7 @@ grid.arrange(v1[[4]], ncol=1)
 The *TOT_POP* variable is the total population per month as esimated by the Census Bureau. 
 
 ```{r totpop-stats, echo=FALSE, warning=FALSE, tab.cap="TOT_POP Variable Statistics"}
-v1 <- exploreVar(allData, "TOT_POP", "Births")
+v1 <- exploreVar(allData, "TOT_POP", "Births", rotateLabels=TRUE, xunit="1000s")
 kable(v1[[1]])
 ```
 
@@ -75,3 +75,87 @@ grid.arrange(v1[[2]], v1[[3]], ncol=2)
 grid.arrange(v1[[4]], ncol=1)
 ```
 
+## Variable TOT_FEMALE
+
+The *TOT_FEMALE* variable is the total population of females per month as esimated by the Census Bureau. 
+
+```{r totfemale-stats, echo=FALSE, warning=FALSE, tab.cap="TOT_FEMALE Variable Statistics"}
+v1 <- exploreVar(allData, "TOT_FEMALE", "Births", xunit="1000s")
+kable(v1[[1]])
+```
+
+```{r totfemale-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r totfemale-viz2, echo=FALSE, warning=FALSE, fig.height=2.5,, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+## Variable TOT_MALE
+
+The *TOT_MALE* variable is the total population of females per month as esimated by the Census Bureau. 
+
+```{r totmale-stats, echo=FALSE, warning=FALSE, tab.cap="TOT_MALE Variable Statistics"}
+v1 <- exploreVar(allData, "TOT_MALE", "Births", xunit="1000s")
+kable(v1[[1]])
+```
+
+```{r totmale-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r totmale-viz2, echo=FALSE, warning=FALSE, fig.height=2.5,, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+## Variable GenderRatio
+
+The *GenderRatio* variable is the percentage of the total population which are females per month derived from data from the Census Bureau. In cases where month data was not available, the annual gender ratio was computed and applied to the monthly total population. 
+
+```{r genderratio-stats, echo=FALSE, warning=FALSE, tab.cap="GenderRatio Variable Statistics"}
+v1 <- exploreVar(allData, "GenderRatio", "Births", xunit="% female", rotateLabels=TRUE)
+kable(v1[[1]])
+```
+
+```{r genderratio-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r genderratio-viz2, echo=FALSE, warning=FALSE, fig.height=2.5, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+## Variable Earnings
+
+The *Earnings* variable is womoen's weekly earnings in current dollars based on data from the Bureau of Labor Statistics. The original values were provided quarterly and were expanded to a monthly format for data analysis purposes.
+
+```{r earnings-stats, echo=FALSE, warning=FALSE, tab.cap="Earnings Variable Statistics"}
+v1 <- exploreVar(allData, "Earnings", "Births", xunit="$")
+kable(v1[[1]])
+```
+
+```{r earnings-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r earnings-viz2, echo=FALSE, warning=FALSE, fig.height=2.5, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+## Variable UnemploymentRate
+
+The *UnemploymentRate* variable is the unemployment rate per month (U3) based on data from the Bureau of Labor Statistics.
+
+```{r urate-stats, echo=FALSE, warning=FALSE, tab.cap="UnemploymentRate Variable Statistics"}
+v1 <- exploreVar(allData, "UnemploymentRate", "Births", xunit="% U3")
+kable(v1[[1]])
+```
+
+```{r urate-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r urate-viz2, echo=FALSE, warning=FALSE, fig.height=2.5, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```

@@ -29,16 +29,18 @@ allBirthData <- rbind(birthData, birthData2)
 
 # Load 2000s census data
 censusData0010 <- loadCensus00Data(path=dataPath)
+censusData0010 <- scaleCensusTotalPop(censusData0010)
 #summary(censusData0010)
 
 # Load 2010s census data
 censusData1015 <- loadCensus10Data("NC-EST2014-ALLDATA-R-File%02d.csv", 12, path=dataPath)
+censusData1015 <- scaleCensusTotalPop(censusData1015)
 #summary(censusData1015)
 
 g1 <- ggplot(censusData1015) + geom_line(aes(x=Date, y=GenderRatio))
 g1
 
-# Combine the 2000-2010 census with the 2010-2015 estimates
+# Combine the 2000-2010 census with the 2010-2015 estimates 
 allCensusData <- rbind(censusData0010, censusData1015)
 g1 <- ggplot(allCensusData) + geom_line(aes(x=Date, y=TOT_FEMALE))
 g1

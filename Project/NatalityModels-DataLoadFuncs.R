@@ -2,6 +2,9 @@ library(reshape2)
 library(dplyr)
 library(lubridate)
 
+rotateXaxisLabels45 <- theme(axis.text.x = element_text(angle = 45, hjust = 1))
+rotateXaxisLabels90 <- theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
 #
 #### FUNCTION: loadBirthData ####
 #
@@ -137,7 +140,7 @@ loadCensus00Data <- function(path="./data/%s")
 #    summary(dfC10)
 #   dfC10[dfC10$YEAR == 2010,]
 #
-loadCensus10Data <- function(filenameFmt, count, path="./data/%s", verbose=FALSE)
+loadCensus10Data <- function(filenameFmt, count, path="./data/%s", verbose=FALSE, fertileAgeRange=c(15,49))
 {
   # Load the Census data
   fn <- sprintf(filenameFmt, 1)
@@ -176,9 +179,39 @@ loadCensus10Data <- function(filenameFmt, count, path="./data/%s", verbose=FALSE
                          Date = lubridate::parse_date_time(sprintf("%s-%s-01", 
                                                                 YEAR, 
                                                                 MONTH), 
-                                                        orders="ymd"))    
+                                                        orders="ymd"))
+  # Starting to bucket the fertile females count
+  # This is basically done, but need to do something similar to the 2000-2010 data
+  # ... Also might be good to bucket in smaller sets rather than one big one.
+  if(FALSE)
+  {
+    # Pull out the # of females ages X - Y
+    dfFxy <- df[fertileAgeRange[1] <= df$AGE & df$AGE <= fertileAgeRange[2], c("TOT_FEMALE", "Date", "AGE")]
+    
+    dfFxySum <- aggregate(TOT_FEMALE ~ Date, dfFxy, FUN=sum)
+    colnames(dfFxySum) <- c("Date", "FERTILE_FEMALE")
+    if(verbose)
+    {
+      print(summary(dfFxySum))  
+    }
+    # Join to our result set ** April 2010 is NA ** 
+    dfRet <- plyr::join(dfRet, dfFxySum, by="Date")
+  }
   
   return (dfRet)  
+}
+
+#
+#### FUNCTION: scaleCensusTotalPop ####
+#
+scaleCensusTotalPop <- function(data)
+{
+  scalar <- 1000.0
+  data$TOT_POP <- data$TOT_POP / scalar
+  data$TOT_FEMALE <- data$TOT_POP / scalar
+  data$TOT_MALE <- data$TOT_POP / scalar
+  
+  return(data)
 }
 
 #
@@ -275,8 +308,16 @@ loadUnemploymentData <- function(filename, path="./data/%s")
 #### exploreVar Function ####
 exploreVar <- function(data, varName, respName, jitter=FALSE, 
                        binwidth=diff(range(data[,varName], na.rm=TRUE))/sqrt(nrow(data)), 
-                       na.rm=TRUE)
+                       na.rm=TRUE,
+                       rotateLabels=FALSE,
+                       xunits=NA)
 {
+  xlabel <- varName
+  if(!is.na(xunits))
+  {
+    xlabel <- paste(varName, "(", xunits, ")")
+  }
+  
   varStats <- data.frame(min=min(data[,varName], na.rm=na.rm),
                          mean=mean(data[,varName], na.rm=na.rm), 
                          stdev=sd(data[,varName], na.rm=na.rm), 
@@ -285,9 +326,10 @@ exploreVar <- function(data, varName, respName, jitter=FALSE,
   
   g1 <- ggplot(data) + 
     geom_histogram(aes_string(x=varName), binwidth = binwidth) + 
-    labs(title=paste("Distribution of\n", varName, "Variable")) +
+    labs(title=paste("Distribution of\n", varName, "Variable"),
+         x=xlabel) +
     myTheme
-  
+
   position <- "identity"
   if(jitter)
   {
@@ -296,13 +338,22 @@ exploreVar <- function(data, varName, respName, jitter=FALSE,
   
   g2 <- ggplot(data) + 
     geom_point(aes_string(x=varName, y=respName), alpha=0.4, position=position) + 
-    labs(title=paste("Scatter plot of\n", varName, "vs", respName)) +
+    labs(title=paste("Scatter plot of\n", varName, "vs", respName),
+         x=xlabel) +
     myTheme
   
   g3 <- ggplot(data) + 
     geom_boxplot(aes_string(rep(varName, nrow(data)), varName)) + 
     labs(title=paste("Box plot of\n", varName), x="", y="") +
     myTheme
+  
+  if(rotateLabels)
+  {
+    g1 <- g1 + rotateXaxisLabels45
+    g2 <- g2 + rotateXaxisLabels45
+    g3 <- g3 + rotateXaxisLabels45
+  }  
+  
   
   return (list(varStats, g1, g2, g3))
 }
