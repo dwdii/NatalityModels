@@ -1,0 +1,77 @@
+---
+title: "Natality Models Data Exploration"
+author: "Daniel Dittenhafer & Justin Hink"
+date: "April 24, 2016"
+documentclass: article 
+geometry: margin=0.75in
+output: 
+  pdf_document:
+    number_sections: yes
+subtitle: "DATA 621: Business Analytics and Data Mining"
+---
+
+```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R")}
+# Initialize our Rmd environment
+```
+
+```{r raw-code, message=FALSE, warning=FALSE, echo=FALSE, code=readLines("./Project-RawCode-dwd.R")}
+# Bring in our functions
+```
+
+# Data Exploration
+
+The unified data set for this project contains `r nrowAllData` rows of data with 1 response variable and `r ncolAllData - 1` predictor variables. An exploration of this data follows.
+
+## Missing Values
+
+An analysis of missing values in the data set revealed `r nrow(dfMissingVals[dfMissingVals$Missing > 0,])` variables with incomplete data.
+
+```{r, echo=FALSE, eval=TRUE}
+#kable(dfMissingVals)
+```
+
+## Correlations
+
+The following table shows Pearson's \(r\) correlation coefficients between the numeric independent variables and the response variable *Births*.
+
+```{r, echo=FALSE, tab.cap="Pearson's r Correlation Coefficients"}
+kable(corMatrix[order(corMatrix[,"Births"], decreasing=TRUE), c("Births")])
+```
+
+
+## Variable Month
+
+
+The *Month* variable is the month of birth. As one should expect, the distribution is uniform, but we can see some seasonality to the relationship between *Births* and *Month* with July and August being high frequency birth months. 
+
+
+```{r month-stats, echo=FALSE, warning=FALSE, tab.cap="Month Variable Statistics"}
+v1 <- exploreVar(allData, "Month", "Births")
+kable(v1[[1]])
+```
+
+```{r month-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r month-viz2, echo=FALSE, warning=FALSE, fig.height=2.5,, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+## Variable TOT_POP
+
+The *TOT_POP* variable is the total population per month as esimated by the Census Bureau. 
+
+```{r totpop-stats, echo=FALSE, warning=FALSE, tab.cap="TOT_POP Variable Statistics"}
+v1 <- exploreVar(allData, "TOT_POP", "Births")
+kable(v1[[1]])
+```
+
+```{r totpop-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r totpop-viz2, echo=FALSE, warning=FALSE, fig.height=2.5,, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+

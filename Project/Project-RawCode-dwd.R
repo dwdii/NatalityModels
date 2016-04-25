@@ -1,59 +1,100 @@
-### Daniel's Raw Code Sandbox...
-
-#
-# FUNCTION: loadBirthData
-#
-loadBirthData <- function(filename)
+library(ggplot2)
+library(plyr)
+dlfFile <- "./Project/NatalityModels-DataLoadFuncs.R"
+if(!file.exists(dlfFile))
 {
-  # Load the Natality data
-  birthFile <- sprintf("./data/%s", filename)
-  birthData <- read.table(birthFile, 
-                          header=TRUE, 
-                          sep="\t", 
-                          fill=TRUE, 
-                          stringsAsFactors=FALSE,
-                          colClasses=c('character', # Notes
-                                       'character', # Year
-                                       'character',   # Year.Code
-                                       'character', # Month
-                                       'character',   # Month.Code
-                                       'character', # Age of Mother
-                                       'character', # Age of Mother Code
-                                       'character', # Marital Status
-                                       'character', # Marital Status Code
-                                       'character', # Education
-                                       'character', # Education Code
-                                       'numeric'))  # Births
-  
-  # Eliminate rows with no birth data (some rows have comments only)
-  birthDataWoNa <- subset(birthData, !is.na(birthData$Births)) 
-  
-  # Transform raw year/month columns into a Date column
-  birthDataWoNa <- dplyr::mutate(birthDataWoNa, 
-                          Date = lubridate::parse_date_time(sprintf("%s-%s-01", 
-                                                                    Year.Code, 
-                                                                    Month.Code), 
-                                                            orders="ymd"))
-  
-  birthDataWoNa$Month.Code <- as.numeric(birthDataWoNa$Month.Code)
-  birthDataWoNa$Age.of.Mother <- as.factor(birthDataWoNa$Age.of.Mother)
-  birthDataWoNa$Marital.Status <- as.factor(birthDataWoNa$Marital.Status)
-  birthDataWoNa$Education <- as.factor(birthDataWoNa$Education)
-  
-  return (birthDataWoNa)
+  dlfFile <- paste0("../", dlfFile)
 }
+source(dlfFile)
 
+### Daniel's Raw Code Sandbox...
+dataPath <- "./data/"
+if(!dir.exists(dataPath))
+{
+  dataPath <- paste0("../", dataPath)
+}
+dataPath <- paste0(dataPath, "%s")
 
-birthData <- loadBirthData("Natality, 2007-2014.txt")
-summary(birthData)
+# Load the 2007-2014 birth data
+birthData <- loadBirthData("Natality, 2007-2014.txt", path=dataPath)
+#summary(birthData)
 
-birthData2 <- loadBirthData("Natality, 2003-2006.txt")
-summary(birthData2)
+# Load the 2003-2006 birth data
+birthData2 <- loadBirthData("Natality, 2003-2006.txt", path=dataPath)
+#summary(birthData2)
 
+# Combine the 2 sets of birth data
 allBirthData <- rbind(birthData, birthData2)
+#summary(allBirthData)
 
-lmCdc <- lm(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
-summary(lmCdc)
+# Load 2000s census data
+censusData0010 <- loadCensus00Data(path=dataPath)
+#summary(censusData0010)
+
+# Load 2010s census data
+censusData1015 <- loadCensus10Data("NC-EST2014-ALLDATA-R-File%02d.csv", 12, path=dataPath)
+#summary(censusData1015)
+
+g1 <- ggplot(censusData1015) + geom_line(aes(x=Date, y=GenderRatio))
+g1
+
+# Combine the 2000-2010 census with the 2010-2015 estimates
+allCensusData <- rbind(censusData0010, censusData1015)
+g1 <- ggplot(allCensusData) + geom_line(aes(x=Date, y=TOT_FEMALE))
+g1
+
+# Load the women's earnings data
+earningsData <- loadEarningsData("Earnings-2003-2015.csv", path=dataPath)
+g1 <- ggplot(earningsData) + 
+  geom_line(aes(x=Date, y=Earnings)) 
+g1
+
+# Load unemployment rate
+urateData <- loadUnemploymentData("UnemploymentRate-2003-2015.csv", path=dataPath)
+g1 <- ggplot(urateData) + 
+  geom_line(aes(x=Date, y=UnemploymentRate)) 
+g1
+
+
+# Combine all together
+allData <- plyr::join(allBirthData, allCensusData, by="Date")
+allData <- plyr::join(allData, earningsData, by="Date")
+allData <- plyr::join(allData, urateData, by="Date")
+allData <- allData[,c("Year", 
+                      "Month", 
+#                       "Age.of.Mother", 
+#                       "Age.of.Mother.Code", 
+#                       "Marital.Status", 
+#                       "Education", 
+                      "Births", 
+                      "Date", 
+                      "TOT_POP", 
+                      "GenderRatio", 
+                      "TOT_FEMALE", 
+                      "TOT_MALE", 
+                      "Earnings", 
+                      "UnemploymentRate")]
+summary(allData)
+
+ncolAllData <- ncol(allData)
+nrowAllData <- nrow(allData)
+
+# Data Exploration
+missingVals <- sapply(allData, function(x) sum(is.na(x)))
+missingValsPerc <- sapply(allData, function(x) sum(is.na(x))/length(x)*100)
+dfMissingVals <- data.frame(Missing=missingVals, Percent=missingValsPerc)
+#summary(missingVals)
+
+# Correlation
+colsForCor <- c("Year", "Month",  "Births", "TOT_POP", "GenderRatio", "TOT_FEMALE", 
+                "TOT_MALE", "Earnings", "UnemploymentRate")
+corMatrix <- cor(allData[,colsForCor], use="complete.obs")
+
+
+# Initial linear model with just the birth data.
+#lmCdc <- lm(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
+#summary(lmCdc)
+
 
 #library(leaps)
 #lmSubsCdc <- leaps::regsubsets(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
