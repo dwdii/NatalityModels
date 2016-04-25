@@ -1,0 +1,65 @@
+---
+title: "Natality Models"
+author: "Daniel Dittenhafer & Justin Hink"
+date: "April 24, 2016"
+documentclass: article 
+geometry: margin=0.75in
+output: 
+  pdf_document:
+    number_sections: yes
+subtitle: "DATA 621: Business Analytics and Data Mining"
+---
+
+```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R")}
+# Initialize our Rmd environment
+```
+
+```{r bib-data, echo=FALSE}
+bibCensus2015 <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Census Bureau")),
+                 title="Monthly Postcensal Resident Population, by single year of age, sex, race, and Hispanic origin",
+                 year=2015,
+                 note="Accessed: April 24, 2016",
+                 url="http://www.census.gov/popest/data/national/asrh/2014/2014-nat-res.html")
+
+bibCensus2000 <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Census Bureau")),
+                 title="National Intercensal Estimates (2000-2010)",
+                 year=2010,
+                 note="Accessed: April 24, 2016",
+                 url="http://www.census.gov/popest/data/intercensal/national/nat2010.html")
+
+
+```
+
+# Abstract
+
+# Keywords
+
+# Literature Review
+
+# Methodology
+
+## Data Preparation
+
+Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were joined together in order to provide a unified data set for analysis and modeling. 
+
+### Census Data
+
+For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. For the period of 2000 - April 2010, monthly population esimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau the 2000 - 2010 time period, converted to ratio's, to divide the monthly total population into age and gender bins.
+
+# Results 
+
+# Summary
+
+# Appendix: Supplemental Tables & Figures
+
+# Appendix: Raw Code
+
+# References
+
+```{r bib-references, results='asis', echo=FALSE, message=FALSE}
+BibOptions(style="html", bib.style="authortitle")
+bibliography()
+```
+
