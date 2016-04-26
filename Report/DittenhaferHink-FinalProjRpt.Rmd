@@ -46,7 +46,7 @@ Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Lab
 
 ### Census Data
 
-For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. For the period of 2000 - April 2010, monthly population esimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau the 2000 - 2010 time period, converted to ratio's, to divide the monthly total population into age and gender bins.
+For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau the 2000 - 2010 time period, converted to ratio's, to divide the monthly total population into age and gender bins.
 
 # Results 
 

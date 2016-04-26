@@ -142,7 +142,7 @@ loadCensus00Data <- function(path="./data/%s", verbose=TRUE, ageBuckets=dfAgeBuc
   if(TRUE)
   {
     df7 <- dfAT[dfAT$MONTH == 7, c("YEAR", "AGE", "TOT_POP", "TOT_FEMALE", "TOT_MALE")]
-    df <- generateAgeBuckets(df7, df, ageBuckets, "YEAR")
+    df <- generateRatioAgeBuckets(df7, df, ageBuckets, "YEAR", verbose=FALSE)
   }
   
   
@@ -242,6 +242,51 @@ generateAgeBuckets <- function(data, destData, ageBuckets, keyCol, verbose=FALSE
   return(destData)
 }
 
+generateRatioAgeBuckets <- function(data, destData, ageBuckets, keyCol, verbose=FALSE)
+{
+  if(verbose)
+  {
+    print("Src Data")
+    print(head(data))
+  }
+  
+  # Separate out some totals for use creating the ratios
+  dfTotFm <- data[data$AGE == 999, c(keyCol, "TOT_FEMALE")]
+  
+  # Loop over the desired age buckets.
+  for(i in 1:nrow(ageBuckets))
+  {
+    # Pull out the # of females ages X - Y for the year
+    dfFxy <- data[ageBuckets[i,]$lwr <= data$AGE & data$AGE < ageBuckets[i,]$upr, c("TOT_FEMALE", keyCol, "AGE")]
+    if(verbose)
+    {
+      print("Age Rows")
+      print(head(dfFxy))
+    }
+    # Aggregate to get age sums
+    dfFxySum <- aggregate(as.formula(paste("TOT_FEMALE ~ ", keyCol)), dfFxy, FUN=sum)
+    newCol <- paste0("FEMALE_", ageBuckets[i,]$lwr, "_", ageBuckets[i,]$upr - 1)
+    colnames(dfFxySum) <- c(keyCol, newCol)
+    if(verbose)
+    {
+      print("Aggregated Age Rows")
+      print(head(dfFxySum))  
+    }
+    # Join age bucket to total females so we can generate ratios
+    dfFxySum <- plyr::join(dfFxySum, dfTotFm, by=keyCol)
+    dfFxySum$Ratio <- dfFxySum[,newCol] / dfFxySum$TOT_FEMALE
+    if(verbose)
+    {
+      print("Ratios with Aggregated Age Rows")
+      print(head(dfFxySum))
+    }
+    # Compute monthly age based buckets from the ratio
+    dfMonthTotFmCnt <- plyr::join(destData[,c(keyCol, "TOT_FEMALE")], dfFxySum[,c(keyCol, "Ratio")], by=keyCol)
+    destData[,newCol] <- dfMonthTotFmCnt$TOT_FEMALE * dfMonthTotFmCnt$Ratio
+  }
+  
+  return(destData)
+}
 #
 #### FUNCTION: scaleCensusTotalPop ####
 #
