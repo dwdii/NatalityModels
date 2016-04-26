@@ -1,9 +1,21 @@
+library(ggplot2)
 library(reshape2)
 library(dplyr)
+library(plyr)
 library(lubridate)
+
+myTheme <- theme(axis.ticks=element_blank(),  
+                 panel.border = element_rect(color="gray", fill=NA), 
+                 panel.background=element_rect(fill="#FBFBFB"), 
+                 panel.grid.major.y=element_line(color="white", size=0.5), 
+                 panel.grid.major.x=element_line(color="white", size=0.5),
+                 plot.title=element_text(size="8"))
 
 rotateXaxisLabels45 <- theme(axis.text.x = element_text(angle = 45, hjust = 1))
 rotateXaxisLabels90 <- theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+dfAgeBuckets <- data.frame(lwr=c(15,25,35), 
+                           upr=c(25,35,45))
 
 #
 #### FUNCTION: loadBirthData ####
@@ -94,7 +106,7 @@ loadCensusNnData <- function(filename, path)
 #     summary(dfC00)
 #     dfC00[dfC00$YEAR == 2003,]
 #
-loadCensus00Data <- function(path="./data/%s")
+loadCensus00Data <- function(path="./data/%s", verbose=TRUE, ageBuckets=dfAgeBuckets)
 {
   fnMonthlyTotals <- "US-EST00INT-TOT.csv"
   fnAnnualTotals <- "US-EST00INT-ALLDATA.csv"
@@ -111,12 +123,12 @@ loadCensus00Data <- function(path="./data/%s")
                    stringsAsFactors=FALSE)
 
   
-  dfAT <- dfAT[dfAT$MONTH == 7 & dfAT$AGE == 999, c("YEAR", "AGE", "TOT_POP", "TOT_FEMALE", "TOT_MALE")]
-  dfAT$GenderRatio <- dfAT$TOT_FEMALE / (dfAT$TOT_POP)
+  dfAT999 <- dfAT[dfAT$MONTH == 7 & dfAT$AGE == 999, c("YEAR", "AGE", "TOT_POP", "TOT_FEMALE", "TOT_MALE")]
+  dfAT999$GenderRatio <- dfAT999$TOT_FEMALE / (dfAT999$TOT_POP)
   
   # Join the gender ratio to the monthly data
   # and generate the female and male sub totals
-  df <- join(df, dfAT[,c("YEAR", "GenderRatio")])
+  df <- plyr::join(df, dfAT999[,c("YEAR", "GenderRatio")])
   df$TOT_FEMALE <- df$GenderRatio * df$TOT_POP
   df$TOT_MALE <- df$TOT_POP - df$TOT_FEMALE
   
@@ -124,6 +136,15 @@ loadCensus00Data <- function(path="./data/%s")
   df <- df[!(df$YEAR == 2010 & df$MONTH == 4), ]
   # Remove July 2010, it is part of the 2010 census estimates
   df <- df[!(df$YEAR == 2010 & df$MONTH == 7), ]
+  
+  # 
+  # Generate age buckets for the female population
+  if(TRUE)
+  {
+    df7 <- dfAT[dfAT$MONTH == 7, c("YEAR", "AGE", "TOT_POP", "TOT_FEMALE", "TOT_MALE")]
+    df <- generateAgeBuckets(df7, df, ageBuckets, "YEAR")
+  }
+  
   
   # show me  
   #print(summary(dfAT))
@@ -140,7 +161,8 @@ loadCensus00Data <- function(path="./data/%s")
 #    summary(dfC10)
 #   dfC10[dfC10$YEAR == 2010,]
 #
-loadCensus10Data <- function(filenameFmt, count, path="./data/%s", verbose=FALSE, fertileAgeRange=c(15,49))
+loadCensus10Data <- function(filenameFmt, count, path="./data/%s", verbose=FALSE, 
+                             ageBuckets=dfAgeBuckets)
 {
   # Load the Census data
   fn <- sprintf(filenameFmt, 1)
@@ -160,45 +182,64 @@ loadCensus10Data <- function(filenameFmt, count, path="./data/%s", verbose=FALSE
     
     df <- rbind(df, loadCensusNnData(fn, path))
   }
+
+  # Convert Census to regular April
+  df[df$MONTH == 4.1, ]$MONTH <- 4
+
+  # Remove April 1, 2010 estimates base 
+  df <- df[df$MONTH != 4.2, ]
+  
+  # Transform raw year/month columns into a Date column one final time, now that 
+  # we fixed up the 4.1 month
+  df <- dplyr::mutate(df, 
+                         Date = lubridate::parse_date_time(sprintf("%s-%s-01", 
+                                                                   YEAR, 
+                                                                   MONTH), 
+                                                           orders="ymd")) 
   
   # Subset to Monthly totals with subset of columns
   dfRet <- df[df$AGE == 999 ,c("MONTH", "YEAR", "TOT_POP", "TOT_FEMALE", "TOT_MALE", "Date")]
   
-  # Convert Census to regular April
-  dfRet[dfRet$MONTH == 4.1, ]$MONTH <- 4
-  
-  # Remove April 1, 2010 estimates base 
-  dfRet <- dfRet[dfRet$MONTH != 4.2, ]
-  
   # Generate Gender Ratio column
   dfRet$GenderRatio <- dfRet$TOT_FEMALE / (dfRet$TOT_POP)
   
-  # Transform raw year/month columns into a Date column one final time, now that 
-  # we fixed up the 4.1 month
-  dfRet <- dplyr::mutate(dfRet, 
-                         Date = lubridate::parse_date_time(sprintf("%s-%s-01", 
-                                                                YEAR, 
-                                                                MONTH), 
-                                                        orders="ymd"))
   # Starting to bucket the fertile females count
-  # This is basically done, but need to do something similar to the 2000-2010 data
-  # ... Also might be good to bucket in smaller sets rather than one big one.
-  if(FALSE)
+  # ... Also might be good to bucket in smaller sets rather than one big one - DONE.
+  if(TRUE)
   {
-    # Pull out the # of females ages X - Y
-    dfFxy <- df[fertileAgeRange[1] <= df$AGE & df$AGE <= fertileAgeRange[2], c("TOT_FEMALE", "Date", "AGE")]
+    dfRet <- generateAgeBuckets(df, dfRet, ageBuckets, "Date")
+  }
+  
+  return (dfRet)  
+}
+
+#
+#### FUNCTION: generateAgeBuckets ####
+#
+generateAgeBuckets <- function(data, destData, ageBuckets, keyCol, verbose=FALSE)
+{
+  for(i in 1:nrow(ageBuckets))
+  {
+    # Pull out the # of females ages X - Y for the year
+    dfFxy <- data[ageBuckets[i,]$lwr <= data$AGE & data$AGE < ageBuckets[i,]$upr, c("TOT_FEMALE", keyCol, "AGE")]
+    if(verbose)
+    {
+      print(summary(dfFxy))
+    }
     
-    dfFxySum <- aggregate(TOT_FEMALE ~ Date, dfFxy, FUN=sum)
-    colnames(dfFxySum) <- c("Date", "FERTILE_FEMALE")
+    dfFxySum <- aggregate(as.formula(paste("TOT_FEMALE ~ ", keyCol)), dfFxy, FUN=sum)
+    newCol <- paste0("FEMALE_", ageBuckets[i,]$lwr, "_", ageBuckets[i,]$upr - 1)
+    colnames(dfFxySum) <- c(keyCol, newCol)
     if(verbose)
     {
       print(summary(dfFxySum))  
     }
-    # Join to our result set ** April 2010 is NA ** 
-    dfRet <- plyr::join(dfRet, dfFxySum, by="Date")
+    
+    # Join to our result set
+    destData <- plyr::join(destData, dfFxySum, by=keyCol)
   }
   
-  return (dfRet)  
+  return(destData)
 }
 
 #
@@ -208,8 +249,12 @@ scaleCensusTotalPop <- function(data)
 {
   scalar <- 1000.0
   data$TOT_POP <- data$TOT_POP / scalar
-  data$TOT_FEMALE <- data$TOT_POP / scalar
-  data$TOT_MALE <- data$TOT_POP / scalar
+  data$TOT_FEMALE <- data$TOT_FEMALE / scalar
+  data$TOT_MALE <- data$TOT_MALE / scalar
+  
+  data$FEMALE_15_24 <- data$FEMALE_15_24 / scalar
+  data$FEMALE_25_34 <- data$FEMALE_25_34 / scalar
+  data$FEMALE_35_44 <- data$FEMALE_35_44 / scalar
   
   return(data)
 }
@@ -356,4 +401,36 @@ exploreVar <- function(data, varName, respName, jitter=FALSE,
   
   
   return (list(varStats, g1, g2, g3))
+}
+
+#### coefficientsPrep Function ####
+coefficientsPrep <- function(smlm)
+{
+  coef <- smlm$coefficients[,c(1,4)]
+  rownames(coef) <- c("Intercept", rownames(coef)[2:nrow(coef)])
+  
+  coefSigNdx <- (coef[,2] < 0.05)
+  if(length(coefSigNdx) > 0)
+  {
+    rownames(coef)[coefSigNdx] <- paste(rownames(coef)[coefSigNdx], "*") 
+  }
+  
+  return(coef)
+}
+
+crossValidate <- function(model, cvdata, responseCol, bPrintSummary)
+{
+  cvPredict <- predict(model, newdata=cvdata)
+  #head(cvPredict)
+  cvCombined <- cbind(cvdata, cvPredict)
+  cvCombined$PredictError <- cvCombined$cvPredict - cvCombined[,responseCol]
+  cvCombined$SqE <- cvCombined$PredictError^2
+  MSE <- mean(cvCombined$SqE, na.rm=TRUE)
+  
+  if(bPrintSummary)
+  {
+    print(summary(cvCombined[,c(responseCol, "cvPredict", "PredictError", "SqE")]))
+  }
+  
+  return(MSE)
 }
