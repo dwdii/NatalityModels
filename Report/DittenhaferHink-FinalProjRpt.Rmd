@@ -10,7 +10,7 @@ output:
 subtitle: "DATA 621: Business Analytics and Data Mining"
 ---
 
-```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R")}
+```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R"), results='hide',message=FALSE}
 # Initialize our Rmd environment
 ```
 
