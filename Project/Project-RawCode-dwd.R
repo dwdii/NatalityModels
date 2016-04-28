@@ -74,6 +74,7 @@ g1
 allData <- plyr::join(allBirthData, allCensusData, by="Date")
 allData <- plyr::join(allData, earningsData, by="Date")
 allData <- plyr::join(allData, urateData, by="Date")
+allData$Month9Ago <- month(allData$Date - months(9))
 allData <- allData[,c("Year", 
                       "Month", 
 #                       "Age.of.Mother", 
@@ -92,7 +93,8 @@ allData <- allData[,c("Year",
                       "FEMALE_25_34",
                       "FEMALE_35_44",
                       "Earnings", 
-                      "UnemploymentRate")]
+                      "UnemploymentRate",
+                      "Month9Ago")]
 summary(allData)
 # Row and column counts
 ncolAllData <- ncol(allData)
@@ -159,21 +161,6 @@ gPdHighCorVars <- ggplot(pdModelData) +
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme
 #gPdHighCorVars
 
-# Signif-HighVIFS variables model 
-lmSigVifVars <- lm(Births ~ Month + GenderRatio + FEMALE_25_34 + FEMALE_35_44 + Earnings, 
-                data=modelData)
-smLmSigVifVars <- summary(lmSigVifVars)
-vfSigVifVars <- faraway::vif(lmSigVifVars)
-
-pdSigVifVars <- predict(lmSigVifVars, se.fit=TRUE)
-pdModelData <- cbind(modelData, model=pdSigVars$fit)
-gPdSigVifVars <- ggplot(pdModelData) + 
-  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
-  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
-  labs(title="Signif Vars - High VIFs Model")
-gPdSigVifVars
-smLmSigVifVars
-
 # Step model 
 lmStep <- step(lmAllVars)
 smLmStep <- summary(lmStep)
@@ -185,8 +172,39 @@ gPdStep <- ggplot(pdModelData) +
   geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
   labs(title="Step Model")
-gPdStep
-smLmStep
+#gPdStep
+#smLmStep
+
+# Signif-HighVIFS variables model 
+lmSigVifVars <- lm(Births ~ Month + GenderRatio + FEMALE_25_34 + FEMALE_35_44 + Earnings, 
+                   data=modelData)
+smLmSigVifVars <- summary(lmSigVifVars)
+vfSigVifVars <- faraway::vif(lmSigVifVars)
+
+pdSigVifVars <- predict(lmSigVifVars, se.fit=TRUE)
+pdModelData <- cbind(modelData, model=pdSigVifVars$fit)
+gPdSigVifVars <- ggplot(pdModelData) + 
+  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
+  labs(title="Signif Vars - High VIFs Model")
+#gPdSigVifVars
+#smLmSigVifVars
+
+# Signif-Limited variables model 
+lmSigLimVars <- lm(Births ~ Month + Month9Ago + FEMALE_25_34 + UnemploymentRate, 
+                   data=modelData)
+smLmSigLimVars <- summary(lmSigLimVars)
+vfSigLimVars <- faraway::vif(lmSigLimVars)
+
+pdSigLimVars <- predict(lmSigLimVars, se.fit=TRUE)
+pdModelData <- cbind(modelData, model=pdSigLimVars$fit)
+gPdSigLimVars <- ggplot(pdModelData) + 
+  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
+  labs(title="Signif Limited Model")
+gPdSigLimVars
+smLmSigLimVars
+vfSigLimVars
 
 # Validation
 showSummary <- FALSE
@@ -195,6 +213,8 @@ cvAllLm <- crossValidate(lmAllVars, crossValData, responseCol, showSummary)
 cvSignifLm <- crossValidate(lmSigVars, crossValData, responseCol, showSummary)
 cvHighCorLm <- crossValidate(lmHighCorVars, crossValData, responseCol, showSummary)
 cvStep <- crossValidate(lmStep, crossValData, responseCol, showSummary)
+cvSigMinus <- crossValidate(lmSigVifVars, crossValData, responseCol, showSummary)
+cvSigLim <- crossValidate(lmSigLimVars, crossValData, responseCol, showSummary)
 
 # 
 # 
@@ -202,17 +222,23 @@ cvStep <- crossValidate(lmStep, crossValData, responseCol, showSummary)
 cvLmResults <- data.frame(Model=c("All Variables", 
                                   "Significant",
                                   "High Cor",
-                                  "Step"),
-                          Val.Error=c(cvAllLm, cvSignifLm, cvHighCorLm, cvStep),
+                                  "Step",
+                                  "Significant Minus",
+                                  "Significant Limited"),
+                          Val.Error=c(cvAllLm, cvSignifLm, cvHighCorLm, cvStep, cvSigMinus, cvSigLim),
                           R2=c(smLmAllVars$adj.r.squared, 
                                smLmSigVars$adj.r.squared,
                                smLmHighCorVars$adj.r.squared,
-                               smLmStep$adj.r.squared),
+                               smLmStep$adj.r.squared,
+                               smLmSigVifVars$adj.r.squared,
+                               smLmSigLimVars$adj.r.squared),
                           Variables=c(length(lmAllVars$coefficients) - 1,
                                       length(lmSigVars$coefficients) - 1,
                                       length(lmHighCorVars$coefficients) - 1,
-                                      length(lmStep$coefficients) - 1),
-                          VIF=c("TBD", "TBD","TBD", "TBD"))
+                                      length(lmStep$coefficients) - 1,
+                                      length(lmSigVifVars$coefficients) - 1,
+                                      length(lmSigLimVars$coefficients) - 1),
+                          VIF=c("BAD", "BAD","BAD", "BAD", "BAD", "OK"))
 
 #library(leaps)
 #lmSubsCdc <- leaps::regsubsets(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
