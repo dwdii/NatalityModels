@@ -10,7 +10,7 @@ output:
 subtitle: "DATA 621: Business Analytics and Data Mining"
 ---
 
-```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R")}
+```{r rmd-init, message=FALSE, echo=FALSE, code=readLines("../RmdInit.R")}
 # Initialize our Rmd environment
 ```
 
@@ -231,7 +231,7 @@ kable(vfAllVars)
 
 ## Signficant Variables Linear Model
 
-The second multiple linear regression model uses predictor variables indicated as significant from the All Variables model. The adjusted \(R^2\) value for this model is `r round(smLmSigVars$adj.r.squared, 5)`.
+The second multiple linear regression model uses predictor variables indicated as significant from the All Variables model. The variables selected here were based on the All Variables model prior to the inclusion of the Month9Ago generated variable which appears to have affected the significant variables. The adjusted \(R^2\) value for this model is `r round(smLmSigVars$adj.r.squared, 5)`.
 
 ```{r modelLM-sigvars-coef, echo=FALSE, tab.cap="Signficant Variables Linear Model Coefficient Estimates"}
 kable(coefficientsPrep(smLmSigVars))
@@ -309,21 +309,23 @@ Based on the criteria of least complex model with lowest validation error, highe
 The Significant Limited model has an F-statistic of `r round(smLmSigLimVars$fstatistic[1], 2)` and a mean squared error (MSE) of `r round(mse(smLmSigLimVars),2)`.
 
 \[
-  \begin{matrix}
-      y_{targetAmt} = & `r lmSigLimVars$coefficients[1]` & `r lmSigLimVars$coefficients[2]` x_{sexF} & `r lmSigLimVars$coefficients[3]` x_{revokedYes}   \\
-    & + `r lmSigLimVars$coefficients[4]` x_{isSportsCar} & &  
-  \end{matrix}
+  \begin{array}{llll}
+      y_{births} = & `r lmSigLimVars$coefficients[1]` & +`r lmSigLimVars$coefficients[2]` x_{Month}  &   \\
+                   &  & + `r lmSigLimVars$coefficients[3]` x_{Month9Ago}  & \\
+                   &  & `r lmSigLimVars$coefficients[4]` x_{FEMALE\_25\_34}  & \\
+                   &  & `r lmSigLimVars$coefficients[5]` x_{UnemploymentRate} &  
+  \end{array}
 \]
 
 We can interpret the coefficients in the following manner. Holding all other predictors constant, for variable:
 
-* *SEXz_F*, female drivers had a $ \(`r round(abs(lmSigCorVarsLM$coefficients[2]), 2)`\) decrease of claims on average compared to males.
-* *REVOKEDYes*, drivers whose license had been revoked in the past 7 years had a $ \(`r round(abs(lmSigCorVarsLM$coefficients[3]), 2)`\) decrease in their claims on average compared to those who hadn't had their license revoked.
-* *ISPORTSCAR*, drivers with a sports car had a $ \(`r round(abs(lmSigCorVarsLM$coefficients[4]), 2)`\) increase in their claims on average compared to those who didn't have a sports car.
-* *BLUEBOOK*, a unit increase in the *BLUEBOOK* value of their car had a $ \(`r round(abs(lmSigCorVarsLM$coefficients[5]), 2)`\) increase in their claims on average.
+* *Month*, as the month of the year increased,  a \(`r round(abs(smLmSigLimVars$coefficients[2]), 2)`\) increase in births would occur.
+* *Month9Ago*, as the 9 month lagged month of the year increased, a \(`r round(abs(smLmSigLimVars$coefficients[3]), 2)`\) increase in births would occur.
+* *FEMALE_25_34*, a unit increase in the population of females age 25-34 would yield a \(`r round(abs(smLmSigLimVars$coefficients[4]), 2)`\) decrease in births.
+* *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(`r round(abs(smLmSigLimVars$coefficients[5]), 2)`\) decrease in births.
 
 
-Linear regression diagnostic plots are shown below. Residuals don't appear to be normally distributed and variance is difficult to judge. There are definitely some outliers which the model is not capturing.
+Linear regression diagnostic plots are shown below. Residuals appear to be normally distributed and variance seems to be fairly constant. There are definitely some outliers which the model is not capturing.
 
 ```{r diagplots-sigcor, fig.height=5.5, echo=FALSE}
 #qqnorm(lmStep$residuals)
@@ -332,7 +334,7 @@ layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
 plot(lmSigLimVars)
 ```
 
-Looking at the inverse response plot, there does not appear to be a pattern to the predicted response versus actual.
+Looking at the inverse response plot, there does appear to be a good linear pattern to the predicted response versus actual.
 
 ```{r, echo=FALSE, fig.height=3}
 g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(lmSigLimVars))) +
@@ -342,8 +344,12 @@ g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(lmSigLimVars))) +
 g1
 ```
 
-Running a more targeted auto-correlation analysis with R's *acf* function does not reveal any pattern of negative and positive residual oscilation.
+Running a more targeted auto-correlation analysis with R's *acf* function shows a possible pattern of negative and positive residual oscilation and imparticular at the lag of 12 .
 
 ```{r autocor-sigcor, echo=FALSE, fig.height=3}
 acf(lmSigLimVars$residuals, main="Significant Limited Linear Model Auto-correlation Plot")
+```
+
+```{r, echo=FALSE}
+gPdSigLimVarsCV
 ```

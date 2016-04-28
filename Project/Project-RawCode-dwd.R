@@ -1,5 +1,6 @@
 library(ggplot2)
 library(plyr)
+set.seed(020275)
 ### Load the data helper functions
 dlfFile <- "./Project/NatalityModels-DataLoadFuncs.R"
 if(!file.exists(dlfFile))
@@ -75,6 +76,7 @@ allData <- plyr::join(allBirthData, allCensusData, by="Date")
 allData <- plyr::join(allData, earningsData, by="Date")
 allData <- plyr::join(allData, urateData, by="Date")
 allData$Month9Ago <- month(allData$Date - months(9))
+allData <- allData[order(allData$Date),]
 allData <- allData[,c("Year", 
                       "Month", 
 #                       "Age.of.Mother", 
@@ -114,7 +116,7 @@ corMatrix <- cor(allData[,colsForCor], use="complete.obs")
 
 
 # Subset all data into training and validation data sets
-cvSample <- sample(nrow(allData) * 0.20)
+cvSample <- sample(nrow(allData),  nrow(allData) * 0.20)
 # Validation set
 crossValData <- allData[cvSample,]
 #crossValData <- fillInMissingWithMedian(crossValData, FALSE)
@@ -162,7 +164,7 @@ gPdHighCorVars <- ggplot(pdModelData) +
 #gPdHighCorVars
 
 # Step model 
-lmStep <- step(lmAllVars)
+lmStep <- step(lmAllVars, trace=0)
 smLmStep <- summary(lmStep)
 vfStep <- faraway::vif(lmStep)
 
@@ -202,9 +204,9 @@ gPdSigLimVars <- ggplot(pdModelData) +
   geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
   labs(title="Signif Limited Model")
-gPdSigLimVars
-smLmSigLimVars
-vfSigLimVars
+#gPdSigLimVars
+#smLmSigLimVars
+#vfSigLimVars
 
 # Validation
 showSummary <- FALSE
@@ -239,6 +241,16 @@ cvLmResults <- data.frame(Model=c("All Variables",
                                       length(lmSigVifVars$coefficients) - 1,
                                       length(lmSigLimVars$coefficients) - 1),
                           VIF=c("BAD", "BAD","BAD", "BAD", "BAD", "OK"))
+
+pdSigLimVarsCV <- predict(lmSigLimVars, se.fit=TRUE, newdata=crossValData)
+pdCVData <- cbind(crossValData, model=pdSigLimVarsCV$fit)
+
+gPdSigLimVarsCV <- ggplot(pdCVData) + 
+  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
+  labs(title="Signif Limited Model vs Validation Set")
+#gPdSigLimVarsCV
+
 
 #library(leaps)
 #lmSubsCdc <- leaps::regsubsets(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)

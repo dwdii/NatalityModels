@@ -479,3 +479,8 @@ crossValidate <- function(model, cvdata, responseCol, bPrintSummary)
   
   return(MSE)
 }
+
+mse <- function(sm) { 
+  mse <- mean(sm$residuals^2)
+  return(mse)
+}
