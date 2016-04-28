@@ -29,12 +29,27 @@ bibCensus2000 <- bibentry(bibtype="Misc",
                  note="Accessed: April 24, 2016",
                  url="http://www.census.gov/popest/data/intercensal/national/nat2010.html")
 
+bibEarnings <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Bureau of Labor Statistics")),
+                 title="Median wkly earnings, Emp FT, Wage & sal wrkrs, Women - LEU0252882700",
+                 year=2015,
+                 note="Accessed: March 10, 2016",
+                 url="http://data.bls.gov/cgi-bin/surveymost?le")
+
+bibUnemploymentRate <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Bureau of Labor Statistics")),
+                 title="Labor Force Statistics from the Current Population Survey 2003-2015 - LNS14000000",
+                 year=2015,
+                 note="Accessed: April 24, 2016",
+                 url="http://data.bls.gov/timeseries/LNS14000000")
 
 ```
 
 # Abstract
 
 # Keywords
+
+Natality, Births
 
 # Literature Review
 
@@ -44,9 +59,57 @@ bibCensus2000 <- bibentry(bibtype="Misc",
 
 Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were joined together in order to provide a unified data set for analysis and modeling. 
 
+### Natality Data
+
 ### Census Data
 
-For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau the 2000 - 2010 time period, converted to ratio's, to divide the monthly total population into age and gender bins.
+For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. The age data was in whole year granulatity and we
+created 10 year buckets for the female population by age: 15-24, 25-34, and 35-44.
+
+For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau 2000 - 2010 time period, converted to ratio's, to divide the monthly total population into age and gender bins as shown in the following expressions:
+
+**Gender Bins**
+
+\[ G_{year} = \frac{F_{year}}{P_{year}} \]
+
+\[ F_{month} = P_{month} * G_{year} \]
+
+\[ M_{month} = P_{month} - F_{month}  \]
+
+Where:
+
+\(\quad G \quad \text{Gender Ratio}\)
+
+\(\quad F \quad \text{Total females, TOT\_FEMALE} \)
+
+\(\quad M \quad \text{Total males, TOT\_MALE} \)
+
+\(\quad P \quad \text{Total population, TOT\_POP} \)
+
+
+**Age Bins**
+
+\[F_{year\_x\_y} = \sum_{i=x}^{y-1} F_{year\_i}\]
+
+\[ A_{year\_x\_y} = \frac{F_{year\_x\_y}}{F_{year}}  \]
+
+\[ F_{month\_x\_y} = F_{month} * A_{year\_x\_y}  \]
+
+Where:
+
+\(\quad x \quad \text{Lower age bound of bin} \)
+
+\(\quad y \quad \text{Upper age bound of bin} \)
+
+\(\quad A \quad \text{Age bin's ratio} \)
+
+### Earnings Data
+
+The earnings data was acquired from the Bureau of Labor Statistics and specifically covers women's weekly earnings from 2003 - 2015 `r citep(bibEarnings)`. The acquired data was at a quarter year granularity and was transformed to a monthly granularity for use in this study where a given quarter's weekly earnings were assigned to each of the 3 months in the 12 month annual period.
+
+### Unemployment Data
+
+Unemployment data (U3) was acquired from the Bureau of Labor Statistics. The data was at a monthly granularity with no transformations applied before use in the study `r citep(bibUnemploymentRate)`. 
 
 # Results 
 
