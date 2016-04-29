@@ -1,0 +1,48 @@
+---
+title: "Natality Models"
+author: "Daniel Dittenhafer & Justin Hink"
+date: "April 28, 2016"
+output: ioslides_presentation
+subtitle: "DATA621 Business Analytics & Data Mining - CUNY"
+---
+
+## Agenda
+
+-	Research Question
+- Data Sets
+-	Methodology
+-	Models
+-	Results
+
+## Research Question
+
+TBD
+
+## Data Sets
+
+TBD
+
+## Methodology
+
+TBD
+
+## Methodology
+
+TBD (continued)
+
+## Models
+
+TBD
+
+## Results
+
+TBD
+
+## Conclusions
+
+TBD
+
+## Thank you!
+
+- Questions?
+
