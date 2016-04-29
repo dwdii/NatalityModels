@@ -14,7 +14,27 @@ subtitle: "DATA 621: Business Analytics and Data Mining"
 # Initialize our Rmd environment
 ```
 
+```{r raw-code, message=FALSE, warning=FALSE, echo=FALSE, code=readLines("../Project/Project-RawCode-dwd.R")}
+# Bring in our functions
+```
+
 ```{r bib-data, echo=FALSE}
+bibNatality0306 <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Centers for Disease Control and Prevention")),
+                 publisher="United States Department of Health and Human Services (US DHHS)",
+                 title="Natality public-use data on CDC WONDER Online Database for years 2003-2006 available March 2009",
+                 year=2009,
+                 note="Accessed: March 1, 2016",
+                 url="http://wonder.cdc.gov/natality-v2006.html")
+
+bibNatality0714 <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Centers for Disease Control and Prevention")),
+                 publisher="United States Department of Health and Human Services (US DHHS)",
+                 title="Natality public-use data on CDC WONDER Online Database for years 2007-2014 available February 2016",
+                 year=2016,
+                 note="Accessed: March 1, 2016",
+                 url="http://wonder.cdc.gov/natality-current.html")
+
 bibCensus2015 <- bibentry(bibtype="Misc",
                  author=personList(person(family="Census Bureau")),
                  title="Monthly Postcensal Resident Population, by single year of age, sex, race, and Hispanic origin",
@@ -60,6 +80,8 @@ Natality, Births
 Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were joined together in order to provide a unified data set for analysis and modeling. 
 
 ### Natality Data
+
+The natality data including birth counts per month were acquired from the Centers for Disease Control and Prevention in two data sets. The first data set contained data for the years 2003 - 2006 `r citep(bibNatality0306)`. The second data set contained data for the years 2007 - 2014 `r citep(bibNatality0714)`. The data sets were merged together and augmented with additional census, earning and unemployment data as described in the following sections. 
 
 ### Census Data
 
@@ -110,6 +132,33 @@ The earnings data was acquired from the Bureau of Labor Statistics and specifica
 ### Unemployment Data
 
 Unemployment data (U3) was acquired from the Bureau of Labor Statistics. The data was at a monthly granularity with no transformations applied before use in the study `r citep(bibUnemploymentRate)`. 
+
+## Data Exploration
+
+We conducted exploratory data analysis to better understand the relationships in the data including correlations (Table 1), feature distributions and basic summary statistics. The data was separated into a training set (80%), used to fit the models, and a validation set (20%), used to test how well our candidate models generalize to unseen data.
+
+```{r, echo=FALSE, tab.cap="Pearson's r Correlation Coefficients"}
+kable(corMatrix[order(corMatrix[,"Births"], decreasing=TRUE), c("Births")])
+```
+
+### Seasonality
+
+As one might expect, we saw seasonality in the birth data. As shown in the scatter plot, below, August is a very popular month for births. July and September are close behind. This suggests that many conceptions are occurs during the United States holiday season between Thanksgiving and New Years.
+
+```{r month-viz, echo=FALSE, warning=FALSE, fig.height=3, fig.width=6.5}
+v1 <- exploreVar(allData, "Month", "Births")
+v1[[3]]
+```
+
+### Gender Ratio
+
+The computed gender ratio which was used to enable the gender buckets for the period of 2003 - 2010 can be seen in the scatterplot below. For these years, the gender ratio is constant for all months while the birth counts fluctuate. Interestingly, the proportion of females has been dropping steadily, though only slightly during the time period being studied.
+
+```{r genderratio-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+v1 <- exploreVar(allData, "GenderRatio", "Births", xunit="% female", rotateLabels=FALSE)
+grid.arrange(gGenderRatio, v1[[3]], ncol=2)
+```
+
 
 # Results 
 

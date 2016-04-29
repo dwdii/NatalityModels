@@ -42,33 +42,33 @@ censusData1015 <- scaleCensusTotalPop(censusData1015)
 # Combine the 2000-2010 census with the 2010-2015 estimates 
 allCensusData <- rbind(censusData0010, censusData1015)
 
-g1 <- ggplot(allCensusData) + 
+gGenderRatio <- ggplot(allCensusData) + 
   geom_line(aes(x=Date, y=GenderRatio)) +
   labs(title="Gender Ratio 2000 - 2015") +
   myTheme
-g1
+#gGenderRatio
 
-g1 <- ggplot(allCensusData) + 
+gFmPop <- ggplot(allCensusData) + 
   geom_line(aes(x=Date, y=TOT_FEMALE)) +
   labs(title="Female Population 2000 - 2015") +
   myTheme
-g1
+#gFmPop
 
 # Load the women's earnings data
 earningsData <- loadEarningsData("Earnings-2003-2015.csv", path=dataPath)
-g1 <- ggplot(earningsData) + 
+gEarnings <- ggplot(earningsData) + 
   geom_line(aes(x=Date, y=Earnings)) +
   labs(title="Women's Weekly Earnings 2003 - 2015") +
   myTheme
-g1
+#gEarnings
 
 # Load unemployment rate
 urateData <- loadUnemploymentData("UnemploymentRate-2003-2015.csv", path=dataPath)
-g1 <- ggplot(urateData) + 
+gUnemployment <- ggplot(urateData) + 
   geom_line(aes(x=Date, y=UnemploymentRate))  +
   labs(title="Unemployment Rate 2003 - 2015") +
   myTheme
-g1
+#gUnemployment
 
 
 # Combine all together
@@ -97,7 +97,7 @@ allData <- allData[,c("Year",
                       "Earnings", 
                       "UnemploymentRate",
                       "Month9Ago")]
-summary(allData)
+#summary(allData)
 # Row and column counts
 ncolAllData <- ncol(allData)
 nrowAllData <- nrow(allData)
