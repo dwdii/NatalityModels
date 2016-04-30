@@ -208,6 +208,18 @@ gPdSigLimVars <- ggplot(pdModelData) +
 #smLmSigLimVars
 #vfSigLimVars
 
+# Poison Count Regression
+pmSigLimVars <- glm(Births ~ Month + Month9Ago + FEMALE_25_34 + UnemploymentRate,
+                    family=poisson, modelData)
+smPmSigLimVars <- summary(pmSigLimVars)
+
+pdPmSigLimVars <- predict(pmSigLimVars, type="response")
+pdModelData <- cbind(modelData, model=pdPmSigLimVars)
+gPdSigLimVars <- ggplot(pdModelData) + 
+  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
+  labs(title="Signif Limited Count Model")
+
 # Validation
 showSummary <- FALSE
 responseCol <- "Births"
@@ -217,6 +229,7 @@ cvHighCorLm <- crossValidate(lmHighCorVars, crossValData, responseCol, showSumma
 cvStep <- crossValidate(lmStep, crossValData, responseCol, showSummary)
 cvSigMinus <- crossValidate(lmSigVifVars, crossValData, responseCol, showSummary)
 cvSigLim <- crossValidate(lmSigLimVars, crossValData, responseCol, showSummary)
+cvPmSigLim <- crossValidateGLM(pmSigLimVars, crossValData, responseCol, showSummary)
 
 # 
 # 

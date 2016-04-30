@@ -480,6 +480,23 @@ crossValidate <- function(model, cvdata, responseCol, bPrintSummary)
   return(MSE)
 }
 
+crossValidateGLM <- function(model, cvdata, responseCol, bPrintSummary)
+{
+  cvPredict <- predict(model, newdata=cvdata, type="response")
+  #head(cvPredict)
+  cvCombined <- cbind(cvdata, cvPredict)
+  cvCombined$PredictError <- cvCombined$cvPredict - cvCombined[,responseCol]
+  cvCombined$SqE <- cvCombined$PredictError^2
+  MSE <- mean(cvCombined$SqE, na.rm=TRUE)
+
+  if(bPrintSummary)
+  {
+    print(summary(cvCombined[,c(classCol, "cvPredict")]))
+  }
+  
+  return(MSE)
+}
+
 mse <- function(sm) { 
   mse <- mean(sm$residuals^2)
   return(mse)
