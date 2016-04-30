@@ -220,6 +220,36 @@ gPdSigLimVars <- ggplot(pdModelData) +
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
   labs(title="Signif Limited Count Model")
 
+# Poisson Regression via StepAIC
+# Poison Count Regression
+pmAllVars <- glm(Births ~ Month + . - Year - Date,
+                    family=poisson, modelData)
+
+smpmAllVars <- summary(pmAllVars)
+
+step <- stepAIC(pmAllVars, direction="backward")
+#step$anova # display results
+
+pmStepAICSuggested <- glm(Births ~ Month + TOT_POP + GenderRatio + TOT_FEMALE + FEMALE_15_24 + 
+                            FEMALE_25_34 + FEMALE_35_44 + Earnings + UnemploymentRate + 
+                            Month9Ago, family=poisson, modelData)
+
+smPmStepAICSuggested <-summary(pmStepAICSuggested)
+
+## Negative Binomial Models
+nbm <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + TOT_FEMALE + FEMALE_15_24 + 
+                 FEMALE_25_34 + FEMALE_35_44 + Earnings + UnemploymentRate + 
+                 Month9Ago, data=modelData)
+smNbm <- summary(nbm)
+
+stepNbm <- stepAIC(nbm, direction="backward")
+stepNbm$anova 
+
+nbmStepAICSuggested <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + FEMALE_25_34 + UnemploymentRate + 
+                                Month9Ago, data=modelData)
+
+smNbmStepAIC <- summary(nbmStepAICSuggested)
+
 # Validation
 showSummary <- FALSE
 responseCol <- "Births"
