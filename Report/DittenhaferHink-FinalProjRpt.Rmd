@@ -14,7 +14,7 @@ subtitle: "DATA 621: Business Analytics and Data Mining"
 # Initialize our Rmd environment
 ```
 
-```{r raw-code, message=FALSE, warning=FALSE, echo=FALSE, code=readLines("../Project/Project-RawCode-dwd.R")}
+```{r raw-code, message=FALSE, warning=FALSE, echo=FALSE, code=readLines("../Project/Project-RawCode-dwd.R"), results='hide'}
 # Bring in our functions
 ```
 
