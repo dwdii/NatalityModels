@@ -297,7 +297,7 @@ The results of the multiple linear regression model validation are shown below.
 
 ```{r table-lm-cverror, echo=FALSE, tab.cap="Linear Model Validation Error Results"}
 cvLmResults <- cvLmResults[order(cvLmResults$Val.Error, decreasing=FALSE),]
-colnames(cvLmResults) <- c("Model", "VS Error", "Adj R^2", "Variables", "VIF")
+colnames(cvLmResults) <- c("Model", "VS Error", "Adj R^2", "AIC", "Variables", "VIF")
 rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```

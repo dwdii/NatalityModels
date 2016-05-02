@@ -208,6 +208,13 @@ gPdSigLimVars <- ggplot(pdModelData) +
 #smLmSigLimVars
 #vfSigLimVars
 
+# Signif-Limited with Interaction variables model 
+lmSigLimInterVars <- lm(Births ~ Month + Month9Ago + FEMALE_25_34 + UnemploymentRate + Month9Ago:FEMALE_25_34, 
+                   data=modelData)
+smLmSigLimInterVars <- summary(lmSigLimInterVars)
+vfSigLimInterVars <- faraway::vif(lmSigLimInterVars)
+
+
 # Poison Count Regression
 pmSigLimVars <- glm(Births ~ Month + Month9Ago + FEMALE_25_34 + UnemploymentRate,
                     family=poisson, modelData)
@@ -227,14 +234,16 @@ pmAllVars <- glm(Births ~ Month + . - Year - Date,
 
 smpmAllVars <- summary(pmAllVars)
 
-step <- stepAIC(pmAllVars, direction="backward")
-#step$anova # display results
+pmStep <- stepAIC(pmAllVars, direction="backward", trace=0)
+smPmStep <- summary(pmStep)
+#smPmStep
 
 pmStepAICSuggested <- glm(Births ~ Month + TOT_POP + GenderRatio + TOT_FEMALE + FEMALE_15_24 + 
                             FEMALE_25_34 + FEMALE_35_44 + Earnings + UnemploymentRate + 
                             Month9Ago, family=poisson, modelData)
 
 smPmStepAICSuggested <-summary(pmStepAICSuggested)
+#smPmStepAICSuggested
 
 ## Negative Binomial Models
 nbm <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + TOT_FEMALE + FEMALE_15_24 + 
@@ -260,6 +269,9 @@ cvStep <- crossValidate(lmStep, crossValData, responseCol, showSummary)
 cvSigMinus <- crossValidate(lmSigVifVars, crossValData, responseCol, showSummary)
 cvSigLim <- crossValidate(lmSigLimVars, crossValData, responseCol, showSummary)
 cvPmSigLim <- crossValidateGLM(pmSigLimVars, crossValData, responseCol, showSummary)
+cmPmStep <- crossValidateGLM(pmStepAICSuggested, crossValData, responseCol, showSummary)
+cvNbm <- crossValidateGLM(nbm, crossValData, responseCol, showSummary)
+cvSigLimInterVars <- crossValidate(lmSigLimInterVars, crossValData, responseCol, showSummary)
 
 # 
 # 
@@ -269,21 +281,52 @@ cvLmResults <- data.frame(Model=c("All Variables",
                                   "High Cor",
                                   "Step",
                                   "Significant Minus",
-                                  "Significant Limited"),
-                          Val.Error=c(cvAllLm, cvSignifLm, cvHighCorLm, cvStep, cvSigMinus, cvSigLim),
+                                  "Significant Limited",
+                                  "Poisson Signif Ltd",
+                                  "Poisson Step",
+                                  "Neg Bionomial",
+                                  "Signif Ltd w/ Interaction"),
+                          Val.Error=c(cvAllLm, 
+                                      cvSignifLm, 
+                                      cvHighCorLm, 
+                                      cvStep, 
+                                      cvSigMinus, 
+                                      cvSigLim,
+                                      cvPmSigLim,
+                                      cmPmStep,
+                                      cvNbm,
+                                      cvSigLimInterVars),
                           R2=c(smLmAllVars$adj.r.squared, 
                                smLmSigVars$adj.r.squared,
                                smLmHighCorVars$adj.r.squared,
                                smLmStep$adj.r.squared,
                                smLmSigVifVars$adj.r.squared,
-                               smLmSigLimVars$adj.r.squared),
+                               smLmSigLimVars$adj.r.squared,
+                               NA,
+                               NA,
+                               NA,
+                               smLmSigLimInterVars$adj.r.squared),
+                          AIC=c(AIC(lmAllVars),
+                                AIC(lmSigVars),
+                                AIC(lmHighCorVars),
+                                AIC(lmStep),
+                                AIC(lmSigVifVars),
+                                AIC(lmSigLimVars),
+                                pmSigLimVars$aic,
+                                pmStep$aic,
+                                nbm$aic,
+                                AIC(lmSigLimInterVars)),
                           Variables=c(length(lmAllVars$coefficients) - 1,
                                       length(lmSigVars$coefficients) - 1,
                                       length(lmHighCorVars$coefficients) - 1,
                                       length(lmStep$coefficients) - 1,
                                       length(lmSigVifVars$coefficients) - 1,
-                                      length(lmSigLimVars$coefficients) - 1),
-                          VIF=c("BAD", "BAD","BAD", "BAD", "BAD", "OK"))
+                                      length(lmSigLimVars$coefficients) - 1,
+                                      length(pmSigLimVars$coefficients) - 1,
+                                      length(pmStep$coefficients) - 1,
+                                      length(nbm$coefficients) - 1,
+                                      length(lmSigLimInterVars$coefficients) - 1),
+                          VIF=c("BAD", "BAD","BAD", "BAD", "BAD", "OK", "NA", "NA", "NA", "BAD"))
 
 pdSigLimVarsCV <- predict(lmSigLimVars, se.fit=TRUE, newdata=crossValData)
 pdCVData <- cbind(crossValData, model=pdSigLimVarsCV$fit)
