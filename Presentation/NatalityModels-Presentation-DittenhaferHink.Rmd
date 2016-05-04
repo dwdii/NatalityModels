@@ -2,9 +2,20 @@
 title: "Natality Models"
 author: "Daniel Dittenhafer & Justin Hink"
 date: "April 28, 2016"
-output: ioslides_presentation
+output: 
+  ioslides_presentation:
+    css: styles.css
 subtitle: "DATA621 Business Analytics & Data Mining - CUNY"
 ---
+
+```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R"), results='hide',message=FALSE}
+# Initialize our Rmd environment
+```
+
+```{r raw-code, message=FALSE, warning=FALSE, echo=FALSE, code=readLines("../Project/Project-RawCode-dwd.R"), results='hide'}
+# Bring in our functions
+```
+
 
 ## Agenda
 
@@ -16,23 +27,76 @@ subtitle: "DATA621 Business Analytics & Data Mining - CUNY"
 
 ## Research Question
 
-TBD
+Using national aggregate data, how can the number of births be forecast? What factors are significant predictors of births in the United States?
 
 ## Data Sets
 
-TBD
+- Natality, 2007-2014
+- Natality, 2003-2006
+- Women's Earnings 2003-2014 - Current Population Survey
+- Unemployment Rates 2003-2015
+- Census Estimates 2000-2010
+- Census Estimates 2010-2015
+
+![Centers for Disease Control](./img/CDC_logo.png) ![Bureau of Labor Statistics](./img/BLS_logo.png) ![Census Bureau](./img/census-logo.png) 
 
 ## Methodology
 
-TBD
+- Data Tidying
+- Joining Data
+- Exploration
+- Building Models
+- Selecting Model(s)
 
-## Methodology
+## Methodology - Data Tidying
 
-TBD (continued)
+- Census Data
+  - 2000-2010: Only Total Population
+  - 2010-2015: Broken down by Age and Gender
+  
+## Methodology - Gender Bins {.smaller}
 
-## Models
+\[ G_{year} = \frac{F_{year}}{P_{year}} \]
 
-TBD
+\[ F_{month} = P_{month} * G_{year} \]
+
+\[ M_{month} = P_{month} - F_{month}  \]
+
+Where:
+
+\(\quad G \quad \text{Gender Ratio}\)
+
+\(\quad F \quad \text{Total females, TOT\_FEMALE} \)
+
+\(\quad M \quad \text{Total males, TOT\_MALE} \)
+
+\(\quad P \quad \text{Total population, TOT\_POP} \)
+
+
+## Methodology: Age Bins {.smaller}
+
+\[F_{year\_x\_y} = \sum_{i=x}^{y-1} F_{year\_i}\]
+
+\[ A_{year\_x\_y} = \frac{F_{year\_x\_y}}{F_{year}}  \]
+
+\[ F_{month\_x\_y} = F_{month} * A_{year\_x\_y}  \]
+
+Where:
+
+\(\quad x \quad \text{Lower age bound of bin} \)
+
+\(\quad y \quad \text{Upper age bound of bin} \)
+
+\(\quad A \quad \text{Age bin's ratio} \)
+
+## Models {.smaller}
+
+```{r table-lm-cverror, echo=FALSE}
+cvLmResults <- cvLmResults[order(cvLmResults$Val.Error, decreasing=FALSE),]
+colnames(cvLmResults) <- c("Model", "VS Error", "Adj R^2", "AIC", "Variables", "VIF")
+rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
+kable(cvLmResults)
+```
 
 ## Results
 
