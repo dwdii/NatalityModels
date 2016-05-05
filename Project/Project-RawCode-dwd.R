@@ -334,7 +334,7 @@ pdCVData <- cbind(crossValData, model=pdSigLimVarsCV$fit)
 gPdSigLimVarsCV <- ggplot(pdCVData) + 
   geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
-  labs(title="Signif Limited Model vs Validation Set")
+  labs(title="Signif Limited Model vs Validation Set", y="Births (1000s)")
 #gPdSigLimVarsCV
 
 
