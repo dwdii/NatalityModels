@@ -98,6 +98,13 @@ rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```
 
+## Models2 (Temp) {.smaller}
+```{r, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
+
+stargazer(lmAllVars, nbm, pmStep, lmStep, pmSigLimVars, lmSigLimVars, lmSigLimInterVars, lmHighCorVars, lmSigVars, lmSigVifVars, title="Candidate Models 1 and 2", header=FALSE, type = "html")
+```
+
+
 ## Models: Significant Limited {.smaller}
 
 ```{r modelLM-siglimited-coef, echo=FALSE, tab.cap="Significant Variables Limited Linear Model Coefficient Estimates"}
@@ -123,7 +130,6 @@ We can interpret the coefficients in the following manner. Holding all other pre
 * *Month9Ago*, as the 9 month lagged month of the year increased, a \(`r round(abs(smLmSigLimVars$coefficients[3]), 2)`\) increase in births would occur.
 * *FEMALE_25_34*, a unit increase in the population of females age 25-34 would yield a \(`r round(abs(smLmSigLimVars$coefficients[4]), 2)`\) decrease in births.
 * *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(`r round(abs(smLmSigLimVars$coefficients[5]), 2)`\) decrease in births.
-
 
 ## Results
 
