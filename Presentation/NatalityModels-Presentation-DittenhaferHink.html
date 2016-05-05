@@ -76,7 +76,7 @@
 
   </style>
 
-  <link href="data:text/css,table%20%7B%0A%20%20%20border%3A%201px%20solid%20black%0A%7D%0A%0A%20td%2C%20th%20%7B%0A%20%20%20padding%3A%202px%0A%20%20%20font%2Dsize%3A%2012px%0A%20%20%20border%3A%201px%20solid%20black%3B%0A%7D" rel="stylesheet" type="text/css" />
+  <link href="data:text/css,table%20%7B%0A%20%20%20border%3A%201px%20solid%20black%0A%7D%0A%0Atd%2C%20th%20%7B%0A%20%20%20padding%3A%202px%0A%20%20%20font%2Dsize%3A%2012px%0A%20%20%20border%3A%201px%20solid%20black%3B%0A%7D" rel="stylesheet" type="text/css" />
 
 
 </head>
@@ -152,11 +152,11 @@
 
 <p>\(\quad G \quad \text{Gender Ratio}\)</p>
 
-<p>\(\quad F \quad \text{Total females, TOT\_FEMALE} \)</p>
+<p>\(\quad F \quad \text{Total females, TOT_FEMALE} \)</p>
 
-<p>\(\quad M \quad \text{Total males, TOT\_MALE} \)</p>
+<p>\(\quad M \quad \text{Total males, TOT_MALE} \)</p>
 
-<p>\(\quad P \quad \text{Total population, TOT\_POP} \)</p>
+<p>\(\quad P \quad \text{Total population, TOT_POP} \)</p>
 
 </article></slide><slide class=''><hgroup><h2>Methodology: Age Bins</h2></hgroup><article  id="methodology-age-bins" class="smaller">
 
@@ -266,6 +266,64 @@
 <td align="left">BAD</td>
 </tr>
 </table>
+
+</article></slide><slide class=''><hgroup><h2>Models: Significant Limited</h2></hgroup><article  id="models-significant-limited" class="smaller">
+
+<table class = 'rmdtable'>
+<caption>Significant Variables Limited Linear Model Coefficient Estimates</caption>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Estimate</th>
+<th align="right">Pr(&gt;|t|)</th>
+</tr>
+<tr class="odd">
+<td align="left">Intercept *</td>
+<td align="right">468350.706460</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Month *</td>
+<td align="right">2490.804603</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Month9Ago *</td>
+<td align="right">2649.171132</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">FEMALE_25_34 *</td>
+<td align="right">-7.181586</td>
+<td align="right">0.0003757</td>
+</tr>
+<tr class="odd">
+<td align="left">UnemploymentRate *</td>
+<td align="right">-2190.844273</td>
+<td align="right">0.0030120</td>
+</tr>
+</table>
+
+</article></slide><slide class=''><hgroup><h2>Models</h2></hgroup><article  id="models-1" class="smaller">
+
+<p>The Significant Limited model has an F-statistic of 32.89 and a mean squared error (MSE) of 146358133.79.</p>
+
+<p>\[
+  \begin{array}{llll}
+      y_{births} = &amp; 468350.7064601 &amp; +2490.8046026 x_{Month}  &amp;   \\
+                   &amp;  &amp; + 2649.1711324 x_{Month9Ago}  &amp; \\
+                   &amp;  &amp; -7.181586 x_{FEMALE\_25\_34}  &amp; \\
+                   &amp;  &amp; -2190.8442727 x_{UnemploymentRate} &amp;  
+  \end{array}
+\]</p>
+
+<p>We can interpret the coefficients in the following manner. Holding all other predictors constant, for variable:</p>
+
+<ul>
+<li><em>Month</em>, as the month of the year increased, a \(2490.8\) increase in births would occur.</li>
+<li><em>Month9Ago</em>, as the 9 month lagged month of the year increased, a \(2649.17\) increase in births would occur.</li>
+<li><em>FEMALE_25_34</em>, a unit increase in the population of females age 25-34 would yield a \(7.18\) decrease in births.</li>
+<li><em>UnemploymentRate</em>, a unit increase in the <em>UnemploymentRate</em> related to a \(2190.84\) decrease in births.</li>
+</ul>
 
 </article></slide><slide class=''><hgroup><h2>Results</h2></hgroup><article  id="results">
 

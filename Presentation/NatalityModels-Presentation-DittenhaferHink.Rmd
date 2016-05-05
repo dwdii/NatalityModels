@@ -66,11 +66,11 @@ Where:
 
 \(\quad G \quad \text{Gender Ratio}\)
 
-\(\quad F \quad \text{Total females, TOT\_FEMALE} \)
+\(\quad F \quad \text{Total females, TOT_FEMALE} \)
 
-\(\quad M \quad \text{Total males, TOT\_MALE} \)
+\(\quad M \quad \text{Total males, TOT_MALE} \)
 
-\(\quad P \quad \text{Total population, TOT\_POP} \)
+\(\quad P \quad \text{Total population, TOT_POP} \)
 
 
 ## Methodology: Age Bins {.smaller}
@@ -97,6 +97,33 @@ colnames(cvLmResults) <- c("Model", "VS Error", "Adj R^2", "AIC", "Variables", "
 rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```
+
+## Models: Significant Limited {.smaller}
+
+```{r modelLM-siglimited-coef, echo=FALSE, tab.cap="Significant Variables Limited Linear Model Coefficient Estimates"}
+kable(coefficientsPrep(smLmSigLimVars))
+```
+
+## Models {.smaller}
+
+The Significant Limited model has an F-statistic of `r round(smLmSigLimVars$fstatistic[1], 2)` and a mean squared error (MSE) of `r round(mse(smLmSigLimVars),2)`.
+
+\[
+  \begin{array}{llll}
+      y_{births} = & `r lmSigLimVars$coefficients[1]` & +`r lmSigLimVars$coefficients[2]` x_{Month}  &   \\
+                   &  & + `r lmSigLimVars$coefficients[3]` x_{Month9Ago}  & \\
+                   &  & `r lmSigLimVars$coefficients[4]` x_{FEMALE\_25\_34}  & \\
+                   &  & `r lmSigLimVars$coefficients[5]` x_{UnemploymentRate} &  
+  \end{array}
+\]
+
+We can interpret the coefficients in the following manner. Holding all other predictors constant, for variable:
+
+* *Month*, as the month of the year increased,  a \(`r round(abs(smLmSigLimVars$coefficients[2]), 2)`\) increase in births would occur.
+* *Month9Ago*, as the 9 month lagged month of the year increased, a \(`r round(abs(smLmSigLimVars$coefficients[3]), 2)`\) increase in births would occur.
+* *FEMALE_25_34*, a unit increase in the population of females age 25-34 would yield a \(`r round(abs(smLmSigLimVars$coefficients[4]), 2)`\) decrease in births.
+* *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(`r round(abs(smLmSigLimVars$coefficients[5]), 2)`\) decrease in births.
+
 
 ## Results
 
