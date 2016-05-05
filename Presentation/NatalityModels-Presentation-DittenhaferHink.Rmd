@@ -98,6 +98,12 @@ rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```
 
+## Models2 (Temp) {.smaller}
+```{r, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
+
+stargazer(nbm, pmAllVars, title="Candidate Models 1 and 2", header=FALSE, type = "html")
+```
+
 ## Results
 
 TBD
