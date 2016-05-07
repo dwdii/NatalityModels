@@ -63,6 +63,12 @@ bibUnemploymentRate <- bibentry(bibtype="Misc",
                  note="Accessed: April 24, 2016",
                  url="http://data.bls.gov/timeseries/LNS14000000")
 
+bibDittenhafer <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Dittenhafer", given="Daniel W")),
+                 title="U.S. Births & Unemployment Rate 2007 - 2012",
+                 year=2014,
+                 url="https://github.com/dwdii/DataAcqMgmt/raw/master/FinalProject/FinalProject-Dittenhafer-USBirthsAnalysis.pdf")
+
 ```
 
 # Abstract
@@ -72,6 +78,8 @@ bibUnemploymentRate <- bibentry(bibtype="Misc",
 Natality, Births
 
 # Literature Review
+
+Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States, finding a negative relationship between births and unemployment during the time period studied `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. 
 
 # Methodology
 
