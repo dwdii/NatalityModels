@@ -102,6 +102,8 @@ allData <- allData[,c("Year",
 ncolAllData <- ncol(allData)
 nrowAllData <- nrow(allData)
 
+#allData$moIndex <- month.abb[allData$Month]
+
 # Data Exploration
 missingVals <- sapply(allData, function(x) sum(is.na(x)))
 missingValsPerc <- sapply(allData, function(x) sum(is.na(x))/length(x)*100)

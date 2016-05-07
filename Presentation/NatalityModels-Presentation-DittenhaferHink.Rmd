@@ -29,6 +29,12 @@ subtitle: "DATA621 Business Analytics & Data Mining - CUNY"
 
 Using national aggregate data, how can the number of births be forecast? What factors are significant predictors of births in the United States?
 
+## Why is this important?
+
+-Having a glimpse into a society's future population size and demographics can give governments (and private companies) insight into things that need to be done to keep things running efficiently
+
+- In the case of a private company it may illuminate new business areas and profit opportunities
+
 ## Data Sets
 
 - Natality, 2007-2014
@@ -39,14 +45,6 @@ Using national aggregate data, how can the number of births be forecast? What fa
 - Census Estimates 2010-2015
 
 ![Centers for Disease Control](./img/CDC_logo.png) ![Bureau of Labor Statistics](./img/BLS_logo.png) ![Census Bureau](./img/census-logo.png) 
-
-## Data Sets: Natality
-
-```{r, echo=FALSE}
-gBirths <- ggplot(allData) + 
-  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme
-gBirths
-```
 
 ## Methodology
 
@@ -97,7 +95,20 @@ Where:
 
 \(\quad A \quad \text{Age bin's ratio} \)
 
-## Methodology: Exploration
+## Model Data
+<center>
+![Centers for Disease Control](./img/datasample.png)
+</center>
+
+## Methodology: Year over Year Birth Rates
+
+```{r, echo=FALSE}
+gBirths <- ggplot(allData) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme
+gBirths
+```
+
+## Methodology: Birth Rates By Month
 
 ```{r month-viz, echo=FALSE, warning=FALSE, fig.height=5, fig.width=7}
 v1 <- exploreVar(allData, "Month", "Births")
