@@ -97,6 +97,13 @@ Where:
 
 \(\quad A \quad \text{Age bin's ratio} \)
 
+## Methodology: Exploration
+
+```{r month-viz, echo=FALSE, warning=FALSE, fig.height=5, fig.width=7}
+v1 <- exploreVar(allData, "Month", "Births")
+v1[[3]]
+```
+
 ## Models {.smaller}
 
 ```{r table-lm-cverror, echo=FALSE}
@@ -104,16 +111,6 @@ cvLmResults <- cvLmResults[order(cvLmResults$Val.Error, decreasing=FALSE),]
 colnames(cvLmResults) <- c("Model", "VS Error", "Adj R^2", "AIC", "Variables", "VIF")
 rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
-```
-
-## Models2 (Temp) {.smaller}
-```{r, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
-stargazer(lmAllVars, nbm, pmStep, lmStep, pmSigLimVars, title="Candidate Models 1 - 5", header=FALSE, type = "html")
-```
-
-## Models2 (Temp) {.smaller}
-```{r, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
-stargazer(lmSigLimVars, lmSigLimInterVars, lmHighCorVars, lmSigVars, lmSigVifVars, title="Candidate Models 6 - 10", header=FALSE, type = "html")
 ```
 
 
