@@ -289,6 +289,45 @@ kable(coefficientsPrep(smLmSigLimVars))
 kable(vfSigLimVars)
 ```
 
+
+## Poisson Significant Limited Model
+
+A Poisson generalized linear model version of the Significant Limited model was produced next. The deviance value for this model is `r round(smPmSigLimVars$deviance, 5)`.
+
+```{r modelPM-pmsiglim-coef, echo=FALSE, tab.cap="Poisson Significant Limited Model Coefficient Estimates"}
+kable(coefficientsPrep(smPmSigLimVars))
+```
+
+```{r, vif-pmsiglim, echo=FALSE, tab.cap="Poisson Significant Limited Model VIFs"}
+kable(vifPmSigLimVars)
+```
+
+## Poisson Step Model
+
+The *stepAIC* function was used to produce the next a Poisson generalized linear model. The deviance value for this model is `r round(smPmStepAICSuggested$deviance, 5)`.
+
+```{r modelPM-pmstep-coef, echo=FALSE, tab.cap="Poisson Step Model Coefficient Estimates"}
+kable(coefficientsPrep(smPmStepAICSuggested))
+```
+
+```{r, vif-pmstep, echo=FALSE, tab.cap="Poisson Step Model VIFs"}
+kable(vifPmStep)
+```
+
+
+## Negative Binomial Step Model
+
+The *stepAIC* function was used to produce the next a Negative Binomial generalized linear model. The deviance value for this model is `r round(smNbmStepAIC$deviance, 5)`.
+
+```{r modelNBM-nbmstep-coef, echo=FALSE, tab.cap="Negative Binomial Step Model Coefficient Estimates"}
+kable(coefficientsPrep(smNbmStepAIC))
+```
+
+```{r, vif-nbmstep, echo=FALSE, tab.cap="Negative Binomial Step Model VIFs"}
+kable(vifNbm)
+```
+
+
 # Select Models
 
 A validation data set (VS) was created from a subset of the full dataset for use in the mulitple linear regression. This VS data set was used to perform a level of independent validation of the previously described models. The validation metric for the multiple linear regression models is the mean squared error from the validation set. 
@@ -302,7 +341,7 @@ rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```
 
-Based on the criteria of least complex model with lowest validation error, highest \(R^2\) and no multicollinearity issues, the Significant Limited model is favored for further investigation.
+Based on the criteria of least complex model with lowest validation error, highest \(R^2\) and/or lowest AIC, and no multicollinearity issues, the Significant Limited model is favored for further investigation.
 
 ## Evaluation: Significant Limited Linear Model
 
@@ -344,7 +383,7 @@ g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(lmSigLimVars))) +
 g1
 ```
 
-Running a more targeted auto-correlation analysis with R's *acf* function shows a possible pattern of negative and positive residual oscilation and imparticular at the lag of 12 .
+Running a more targeted auto-correlation analysis with R's *acf* function shows a possible auto-correlation issue with lag 2 and 6.
 
 ```{r autocor-sigcor, echo=FALSE, fig.height=3}
 acf(lmSigLimVars$residuals, main="Significant Limited Linear Model Auto-correlation Plot")
@@ -352,4 +391,62 @@ acf(lmSigLimVars$residuals, main="Significant Limited Linear Model Auto-correlat
 
 ```{r, echo=FALSE}
 gPdSigLimVarsCV
+```
+
+## Evaluation: Poisson Significant Limited Model
+
+The mathematical form of the Poisson Significant Limited Model is as follows:
+
+\[
+  \begin{array}{llll}
+       log\left(E(y_{births} | x)\right) = & `r pmSigLimVars$coefficients[1]` & +`r pmSigLimVars$coefficients[2]` x_{Month}  &   \\
+                   &  & + `r pmSigLimVars$coefficients[3]` x_{Month9Ago}  & \\
+                   &  & `r pmSigLimVars$coefficients[4]` x_{FEMALE\_25\_34}  & \\
+                   &  & `r pmSigLimVars$coefficients[5]` x_{UnemploymentRate} &  
+  \end{array}
+\]
+
+We can interpret the coefficients in the following manner. Holding all other predictors constant, for variable:
+
+* *Month*, as the month of the year increased,  a \(e^{`r pmSigLimVars$coefficients[2]`} = `r exp(pmSigLimVars$coefficients[2])`\) times increase in births would occur.
+* *Month9Ago*, as the 9 month lagged month of the year increased, a \(e^{`r pmSigLimVars$coefficients[3]`} = `r exp(pmSigLimVars$coefficients[3])`\) times increase in births would occur.
+* *FEMALE_25_34*, a unit increase in the population of females age 25-34 would yield a \(e^{`r pmSigLimVars$coefficients[4]`} = `r exp(pmSigLimVars$coefficients[4])`\) times decrease in births.
+* *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(e^{`r pmSigLimVars$coefficients[5]`} = `r exp(pmSigLimVars$coefficients[5])`\) times decrease in births.
+
+
+Regression diagnostic plots are shown below. Residuals appear to be normally distributed and variance seems to be fairly constant. The Leverage plot in the lower right shows many points which exceed Cook's distance and suggest points of high leverage.
+
+```{r diagplots-psigltd, fig.height=5.5, echo=FALSE}
+#qqnorm(lmStep$residuals)
+#qqline(lmStep$residuals)  # adds diagonal line to the normal prob plot
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+plot(pmSigLimVars)
+```
+
+Looking at the inverse response plot, there does appear to be a good linear pattern to the predicted response versus actual.
+
+```{r, inverse-psigltd, echo=FALSE, fig.height=3}
+g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(pmSigLimVars, type="response"))) +
+  geom_point(aes(x=y, y=y.hat)) +
+  myTheme +
+  labs(title="Inverse Response Plot")
+g1
+```
+
+Again, running a more targeted auto-correlation analysis with R's *acf* function shows the same possible auto-correlation issue with lag 2 and 6.
+
+```{r autocor-psigltd, echo=FALSE, fig.height=3}
+acf(pmSigLimVars$residuals, main="Significant Limited Poisson Model Auto-correlation Plot")
+```
+
+```{r, echo=FALSE}
+gPdPmSigLimVarsCV
+```
+
+## Appendix: Significant Limited vs Full Data Set
+
+The following plot shows the Significant Limited model against the full, combined training and validation data set.
+
+```{r, echo=FALSE}
+gPdPmSigLimVarsAll
 ```

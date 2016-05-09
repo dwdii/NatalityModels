@@ -221,6 +221,7 @@ vfSigLimInterVars <- faraway::vif(lmSigLimInterVars)
 pmSigLimVars <- glm(Births ~ Month + Month9Ago + FEMALE_25_34 + UnemploymentRate,
                     family=poisson, modelData)
 smPmSigLimVars <- summary(pmSigLimVars)
+vifPmSigLimVars <- faraway::vif(pmSigLimVars)
 
 pdPmSigLimVars <- predict(pmSigLimVars, type="response")
 pdModelData <- cbind(modelData, model=pdPmSigLimVars)
@@ -246,14 +247,16 @@ pmStepAICSuggested <- glm(Births ~ Month + TOT_POP + GenderRatio + TOT_FEMALE + 
 
 smPmStepAICSuggested <-summary(pmStepAICSuggested)
 #smPmStepAICSuggested
+vifPmStep <- faraway::vif(pmStepAICSuggested)
 
 ## Negative Binomial Models
 nbm <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + TOT_FEMALE + FEMALE_15_24 + 
                  FEMALE_25_34 + FEMALE_35_44 + Earnings + UnemploymentRate + 
                  Month9Ago, data=modelData)
 smNbm <- summary(nbm)
+vifNbm <- faraway::vif(nbm)
 
-stepNbm <- stepAIC(nbm, direction="backward")
+stepNbm <- stepAIC(nbm, direction="backward", trace=0)
 stepNbm$anova 
 
 nbmStepAICSuggested <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + FEMALE_25_34 + UnemploymentRate + 
@@ -286,7 +289,7 @@ cvLmResults <- data.frame(Model=c("All Variables",
                                   "Significant Limited",
                                   "Poisson Signif Ltd",
                                   "Poisson Step",
-                                  "Neg Bionomial",
+                                  "Neg Binomial Step",
                                   "Signif Ltd w/ Interaction"),
                           Val.Error=c(cvAllLm, 
                                       cvSignifLm, 
@@ -328,16 +331,36 @@ cvLmResults <- data.frame(Model=c("All Variables",
                                       length(pmStep$coefficients) - 1,
                                       length(nbm$coefficients) - 1,
                                       length(lmSigLimInterVars$coefficients) - 1),
-                          VIF=c("BAD", "BAD","BAD", "BAD", "BAD", "OK", "NA", "NA", "NA", "BAD"))
+                          VIF=c("BAD", "BAD","BAD", "BAD", "BAD", "OK", "OK", "BAD", "BAD", "BAD"))
 
+# Significant Limited Model
 pdSigLimVarsCV <- predict(lmSigLimVars, se.fit=TRUE, newdata=crossValData)
 pdCVData <- cbind(crossValData, model=pdSigLimVarsCV$fit)
 
 gPdSigLimVarsCV <- ggplot(pdCVData) + 
   geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
-  labs(title="Signif Limited Model vs Validation Set", y="Births (1000s)")
+  labs(title="Signif Limited Model vs Validation Set", y="Births")
 #gPdSigLimVarsCV
+
+# Poisson Significant Limited Model
+pdPmSigLimVarsAll <- predict(pmSigLimVars, type="response", newdata=allData)
+pdAllDataPm <- cbind(allData, model=pdPmSigLimVarsAll)
+
+gPdPmSigLimVarsAll <- ggplot(pdAllDataPm) + 
+  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
+  labs(title="Signif Limited Model vs Full Data Set", y="Births")
+
+
+# Poisson Significant Limited Model
+pdPmSigLimVarsCV <- predict(pmSigLimVars, type="response", newdata=crossValData)
+pdCVDataPm <- cbind(crossValData, model=pdPmSigLimVarsCV)
+
+gPdPmSigLimVarsCV <- ggplot(pdCVDataPm) + 
+  geom_line(aes(x=Date, y=model), colour="pink", size=1) + 
+  geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
+  labs(title="Poisson Signif Limited Model vs Validation Set", y="Births")
 
 
 #library(leaps)

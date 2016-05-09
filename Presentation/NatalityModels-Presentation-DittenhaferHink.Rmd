@@ -170,14 +170,14 @@ g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(lmSigLimVars))) +
 g1
 ```
 
-## Results
+## Results {.smaller}
 
 ```{r, echo=FALSE}
 gPdSigLimVarsCV
 ```
 
-Red = Model
-Green = Actual
+- Red = Model
+- Green = Actual
 
 ## Conclusions
 
