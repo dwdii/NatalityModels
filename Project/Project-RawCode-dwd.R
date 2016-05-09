@@ -264,6 +264,10 @@ nbmStepAICSuggested <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + FEMALE_25
 
 smNbmStepAIC <- summary(nbmStepAICSuggested)
 
+# AR
+#arModel <- ar(ts(modelData), method="burg")
+#arModel
+
 # Validation
 showSummary <- FALSE
 responseCol <- "Births"

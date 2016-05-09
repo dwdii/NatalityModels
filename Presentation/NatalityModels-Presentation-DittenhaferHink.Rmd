@@ -1,7 +1,7 @@
 ---
 title: "Natality Models"
 author: "Daniel Dittenhafer & Justin Hink"
-date: "April 28, 2016"
+date: "May 9, 2016"
 output: 
   ioslides_presentation:
     css: styles.css
@@ -114,6 +114,15 @@ gBirths
 v1 <- exploreVar(allData, "Month", "Births")
 v1[[3]]
 ```
+
+## Models {.smaller}
+
+* 11 models investigated
+    + 7 Multiple Linear Regression models
+    + 3 Possion Generalized Linear models
+    + 1 Negative Binomial Generalized Linear model
+* 80% training data / 20% validation 
+
 
 ## Models {.smaller}
 
