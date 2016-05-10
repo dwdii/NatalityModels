@@ -257,7 +257,7 @@ smNbm <- summary(nbm)
 vifNbm <- faraway::vif(nbm)
 
 stepNbm <- stepAIC(nbm, direction="backward", trace=0)
-stepNbm$anova 
+#stepNbm$anova 
 
 nbmStepAICSuggested <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + FEMALE_25_34 + UnemploymentRate + 
                                 Month9Ago, data=modelData)
