@@ -2,10 +2,11 @@
 title: "Natality Models"
 author: "Daniel Dittenhafer & Justin Hink"
 date: "May 9, 2016"
-output: 
+output:
+  beamer_presentation: default
   ioslides_presentation:
     css: styles.css
-subtitle: "DATA621 Business Analytics & Data Mining - CUNY"
+subtitle: DATA621 Business Analytics & Data Mining - CUNY
 ---
 
 ```{r rmd-init, echo=FALSE, code=readLines("../RmdInit.R"), results='hide',message=FALSE}
