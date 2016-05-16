@@ -182,7 +182,7 @@ grid.arrange(v1[[4]], ncol=1)
 
 ## Variable Earnings
 
-The *Earnings* variable is womoen's weekly earnings in current dollars based on data from the Bureau of Labor Statistics. The original values were provided quarterly and were expanded to a monthly format for data analysis purposes.
+The *Earnings* variable is women's weekly earnings in current dollars based on data from the Bureau of Labor Statistics. The original values were provided quarterly and were expanded to a monthly format for data analysis purposes.
 
 ```{r earnings-stats, echo=FALSE, warning=FALSE, tab.cap="Earnings Variable Statistics"}
 v1 <- exploreVar(allData, "Earnings", "Births", xunit="$")
@@ -194,6 +194,28 @@ grid.arrange(v1[[2]], v1[[3]], ncol=2)
 ```
 
 ```{r earnings-viz2, echo=FALSE, warning=FALSE, fig.height=2.5, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+Examining earnings against female population ages 25-34:
+
+```{r earnings-fm2534-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+v1 <- exploreVar(allData, "Earnings", "FEMALE_25_34", xunit="$")
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r earnings-fm2534-viz2, echo=FALSE, warning=FALSE, fig.height=2.5, fig.width=3}
+grid.arrange(v1[[4]], ncol=1)
+```
+
+Examining earnings against female population ages 35-44:
+
+```{r earnings-fm3544-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+v1 <- exploreVar(allData, "Earnings", "FEMALE_35_44", xunit="$")
+grid.arrange(v1[[2]], v1[[3]], ncol=2)
+```
+
+```{r earnings-fm3544-viz2, echo=FALSE, warning=FALSE, fig.height=2.5, fig.width=3}
 grid.arrange(v1[[4]], ncol=1)
 ```
 

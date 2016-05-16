@@ -1,5 +1,5 @@
 ---
-title: "Natality Models"
+title: "United States Natality Models 2003-2014"
 author: "Daniel Dittenhafer & Justin Hink"
 date: "April 24, 2016"
 documentclass: article 
@@ -7,6 +7,7 @@ geometry: margin=0.75in
 output: 
   pdf_document:
     number_sections: yes
+    fig_caption: true
 subtitle: "DATA 621: Business Analytics and Data Mining"
 ---
 
@@ -69,23 +70,52 @@ bibDittenhafer <- bibentry(bibtype="Misc",
                  year=2014,
                  url="https://github.com/dwdii/DataAcqMgmt/raw/master/FinalProject/FinalProject-Dittenhafer-USBirthsAnalysis.pdf")
 
+
+bibSpMorg21 <- bibentry(bibtype="Misc",
+                 author=personList(person(family="Morgan", given="S. Philip"), 
+                                   person(family="Taylor", given="Miles G.")),
+                 journal="Annual Review of Sociology",
+                 title="Low Fertility at the Turn of the Twenty-First Century",
+                 year=2006,
+                 month="August",
+                 url="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2849172/")
+
+bibRelWage <- bibentry(bibtype="Article",
+                 title="Relative Wage Changes and Fertility in the US",
+                 author=person(family="Amialchuk", given="Aliaksandr"),
+                 journal="Eastern Economic Journal",
+                 year=2013,
+                 doi="10.1057/eej.2013.2",
+                 volume="39(2)")
+
+bibGitHub <- bibentry(bibtype="Misc",
+                      title="NatalityModels",
+                      author=personList(person(family="Dittenhafer", given="Daniel W"), 
+                                   person(family="Hink", given="Justin")),
+                      year=2016,
+                      url="https://github.com/dwdii/NatalityModels")
+
 ```
 
 # Abstract
 
 # Keywords
 
-Natality, Births
+natality, births, demographic theory
 
 # Literature Review
 
-Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States, finding a negative relationship between births and unemployment during the time period studied `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. 
+As a starting point for this study, Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States. Dittenhafer found a negative relationship between births and unemployment during the time period studied of 2007 - 2012 `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. Although the unemployment-based model showed some interesting analysis, its usefulness is still to be determined. On the other hand, the negative relationship finding appears to be a relavent output of the study, and one which our current research supports.
+
+Morgan and Taylor published a paper in The Annual Review of Sociology regarding recent fertility trends, and specifically a shift to lower birth rates as compared to the second half of the twentieth century `r citep(bibSpMorg21)`. Our research did not relate to this directly, but further reductions in births were observed beginning in 2008. This may constitute another change point or may be a continuation of the trend studied by Morgan and Taylor.
+
+We include women's earnings as a possible predictor in this study based on research by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. Across all women, women's education, men's education, men's earnings and metro area were all found to be significant in age-specific fertility regression. We were not able to include age specific earnings, but rather a single earnings measure for women of child bearing age `r citep(bibEarnings)`.
 
 # Methodology
 
 ## Data Preparation
 
-Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were joined together in order to provide a unified data set for analysis and modeling. 
+Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics identified and downloaded to our project GitHub repository `r citep(bibGitHub)`. These data sets were subsequently joined together in order to provide a unified data set for analysis and modeling. 
 
 ### Natality Data
 
@@ -96,9 +126,11 @@ The natality data including birth counts per month were acquired from the Center
 For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. The age data was in whole year granulatity and we
 created 10 year buckets for the female population by age: 15-24, 25-34, and 35-44.
 
-For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau 2000 - 2010 time period, converted to ratio's, to divide the monthly total population into age and gender bins as shown in the following expressions:
+For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau's 2000 - 2010 time period (converted to ratios) to divide the monthly total population into age and gender bins as shown in the following expressions:
 
 **Gender Bins**
+
+For each year, 2003 - 2010:
 
 \[ G_{year} = \frac{F_{year}}{P_{year}} \]
 
@@ -119,6 +151,8 @@ Where:
 
 **Age Bins**
 
+Again, for each year, 2003 - 2010:
+
 \[F_{year\_x\_y} = \sum_{i=x}^{y-1} F_{year\_i}\]
 
 \[ A_{year\_x\_y} = \frac{F_{year\_x\_y}}{F_{year}}  \]
@@ -135,7 +169,7 @@ Where:
 
 ### Earnings Data
 
-The earnings data was acquired from the Bureau of Labor Statistics and specifically covers women's weekly earnings from 2003 - 2015 `r citep(bibEarnings)`. The acquired data was at a quarter year granularity and was transformed to a monthly granularity for use in this study where a given quarter's weekly earnings were assigned to each of the 3 months in the 12 month annual period.
+The earnings data was acquired from the Bureau of Labor Statistics and specifically covers women's weekly earnings from 2003 - 2015 `r citep(bibEarnings)`. The acquired data was at a quarter year granularity and was transformed to a monthly granularity for use in this study by simply assigning a quarter's weekly earnings to each of the related 3 months in the 12 month annual period.
 
 ### Unemployment Data
 
@@ -153,22 +187,56 @@ kable(corMatrix[order(corMatrix[,"Births"], decreasing=TRUE), c("Births")])
 
 As one might expect, we saw seasonality in the birth data. As shown in the scatter plot, below, August is a very popular month for births. July and September are close behind. This suggests that many conceptions are occurs during the United States holiday season between Thanksgiving and New Years.
 
-```{r month-viz, echo=FALSE, warning=FALSE, fig.height=3, fig.width=6.5}
+```{r month-viz, echo=FALSE, warning=FALSE, fig.height=3, fig.width=6.5, fig.cap="Month vs Births"}
 v1 <- exploreVar(allData, "Month", "Births")
 v1[[3]]
 ```
 
 ### Gender Ratio
 
-The computed gender ratio which was used to enable the gender buckets for the period of 2003 - 2010 can be seen in the scatterplot below. For these years, the gender ratio is constant for all months while the birth counts fluctuate. Interestingly, the proportion of females has been dropping steadily, though only slightly during the time period being studied.
+The computed gender ratio which was used to enable the gender buckets for the period of 2003 - 2010 can be seen in the scatterplot below. For these years, the gender ratio is constant for all months of a given year while the birth counts fluctuate. Interestingly, the proportion of females has been dropping steadily, though only slightly during the time period being studied.
 
-```{r genderratio-viz, echo=FALSE, warning=FALSE, fig.height=2.5}
+```{r genderratio-viz, echo=FALSE, warning=FALSE, fig.height=2.5, fig.cap="GenderRatio vs Date, GenderRatio vs Births"}
 v1 <- exploreVar(allData, "GenderRatio", "Births", xunit="% female", rotateLabels=FALSE)
 grid.arrange(gGenderRatio, v1[[3]], ncol=2)
 ```
 
+### Earnings
+
+Women's weekly earnings as a broad median value, as reported by the Current Population Survey via the Bureau of Labor Statistics, revealed a negative correlation with births, as previously shown. 
+
+```{r earnings-viz, echo=FALSE, warning=FALSE, fig.height=2.5, fig.cap="Earnings vs Births"}
+v1 <- exploreVar(allData, "Earnings", "Births", xunit="$")
+v1[[3]]
+```
+
+As part of variance inflation factor (VIF) analysis, we found that the earnings measure we used was correlated with female population levels. As shown, in some cases this was a positive relationship (both 15-24 and 25-34), but for the 35-44 age range this was a negative relationship. In general, these relationship resulted in VIFs which significantly exceeded 10 when earnings and the female age values were included in a model. Further study on this relationship may be warranted inorder to better understand the drivers.
+
+```{r earnings-fm15-fm25-viz, echo=FALSE, warning=FALSE, fig.height=2.5, fig.cap="Earnings vs Female Population 25-34 and 35-44"}
+vF15 <- exploreVar(allData, "Earnings", "FEMALE_15_24", xunit="$")
+vF25 <- exploreVar(allData, "Earnings", "FEMALE_25_34", xunit="$")
+vF35 <- exploreVar(allData, "Earnings", "FEMALE_35_44", xunit="$")
+grid.arrange(vF25[[3]], vF35[[3]], ncol=2)
+```
+
+## Model Development
+
+Eleven models were developed and examined for significance using a subset (80%) of the original full data set. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
+
+## Model Validation
+
+A validation data set (VS) was created from a subset of the full data set (20%). This VS data set was used to perform a level of independent validation of the previously described models. The validation metric for the multiple linear regression models is the mean squared error from the validation set. 
 
 # Results 
+
+The results of the multiple linear regression model validation are shown below.
+
+```{r table-lm-cverror, echo=FALSE, tab.cap="Linear Model Validation Error Results"}
+cvLmResults <- cvLmResults[order(cvLmResults$Val.Error, decreasing=FALSE),]
+colnames(cvLmResults) <- c("Model", "VS Error", "Adj R^2", "AIC", "Variables", "VIF")
+rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
+kable(cvLmResults)
+```
 
 # Summary
 
