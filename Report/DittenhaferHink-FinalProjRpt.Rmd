@@ -113,6 +113,10 @@ We include women's earnings as a possible predictor in this study based on resea
 
 # Methodology
 
+## Technology
+
+We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model deveopment, validation and selection. A GitHub repository was setup to facilitate collaboration amoungst the team, as well as to share our work in the spirit of reproducible research.
+
 ## Data Preparation
 
 Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics identified and downloaded to our project GitHub repository `r citep(bibGitHub)`. These data sets were subsequently joined together in order to provide a unified data set for analysis and modeling. 
@@ -177,7 +181,25 @@ Unemployment data (U3) was acquired from the Bureau of Labor Statistics. The dat
 
 ## Data Exploration
 
-We conducted exploratory data analysis to better understand the relationships in the data including correlations (Table 1), feature distributions and basic summary statistics. The data was separated into a training set (80%), used to fit the models, and a validation set (20%), used to test how well our candidate models generalize to unseen data.
+We conducted exploratory data analysis to better understand the relationships in the data including correlations, feature distributions and basic summary statistics. 
+
+
+
+## Model Development
+
+Eleven models were developed and examined for significance using a subset (80%) of the original full data set. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
+
+## Model Validation
+
+A validation data set (VS) was created from a subset of the full data set (20%). This VS data set was used to test how well our candidate models generalize to unseen data. The validation metric for the multiple linear regression models is the mean squared error from the validation set. 
+
+# Results 
+
+## Data Exploration
+
+### Correlations
+
+The following table shows the correlation coefficients associated with each variable and the dependent variable, *Births*.
 
 ```{r, echo=FALSE, tab.cap="Pearson's r Correlation Coefficients"}
 kable(corMatrix[order(corMatrix[,"Births"], decreasing=TRUE), c("Births")])
@@ -185,7 +207,7 @@ kable(corMatrix[order(corMatrix[,"Births"], decreasing=TRUE), c("Births")])
 
 ### Seasonality
 
-As one might expect, we saw seasonality in the birth data. As shown in the scatter plot, below, August is a very popular month for births. July and September are close behind. This suggests that many conceptions are occurs during the United States holiday season between Thanksgiving and New Years.
+As one might expect, we saw seasonality in the birth data. As shown in the scatter plot, below, August is a very popular month for births. July and September are close behind. This suggests that many conceptions are occuring during the United States holiday season between Thanksgiving and New Years.
 
 ```{r month-viz, echo=FALSE, warning=FALSE, fig.height=3, fig.width=6.5, fig.cap="Month vs Births"}
 v1 <- exploreVar(allData, "Month", "Births")
@@ -221,15 +243,21 @@ grid.arrange(vF25[[3]], vF35[[3]], ncol=2)
 
 ## Model Development
 
-Eleven models were developed and examined for significance using a subset (80%) of the original full data set. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
+We started with all possible predictor variables from our data sets in an ordinary least squares linear model. This model yielded a adjusted \(R^2\) of `r round(smLmAllVars$adj.r.squared, 5)`, but had significant variance inflation factor issues (> 120,000,000). 
+
+Next, we took the significant predictors from the "All Variables" model and created a new, smaller model. Again, VIFs were large. Specifically, the population bins were highly related.
+
+```{r, vif-sigvars, echo=FALSE, tab.cap="Signficant Variables Linear Model VIFs"}
+kable(vfSigVars)
+```
+
+A new model using guidance from the correlation analysis yielded our "High Correlation Variables" linear model. VIFs were better, but still well above our threshold of 10. Our fourth model was created using the R's *step* function. The "Step" model had an impressive adjusted \(R^2\) of `r round(smLmStep$adj.r.squared, 5)` for only 5 predictor variables. The variance inflation factors were improved, but unfortunately, still exceeded our threshold.
+
+Next, we experimented with a revised "Significant Variables Minus" model which was based on the "Significant Variables" model but with three high VIF variables removed. 
 
 ## Model Validation
 
-A validation data set (VS) was created from a subset of the full data set (20%). This VS data set was used to perform a level of independent validation of the previously described models. The validation metric for the multiple linear regression models is the mean squared error from the validation set. 
-
-# Results 
-
-The results of the multiple linear regression model validation are shown below.
+As mentioned earlier, a validation data set was reserved for use confirming the performance of each of the developed models. The results of the multiple linear regression model validation are shown below.
 
 ```{r table-lm-cverror, echo=FALSE, tab.cap="Linear Model Validation Error Results"}
 cvLmResults <- cvLmResults[order(cvLmResults$Val.Error, decreasing=FALSE),]
