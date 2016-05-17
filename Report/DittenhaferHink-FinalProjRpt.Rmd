@@ -383,16 +383,24 @@ acf(pmSigLimVars$residuals, main="Significant Limited Poisson Model Auto-correla
 ```
 
 
-
 # Summary
+
+Given the data set inputs we chose for this study, the Significant Limited multiple linear regresion model offers the best outcome. With that said, it has limitations. The model does not account for population growth sufficiently, but instead reduces births as more females are present in the age range of 25 - 34. On the otherhand, the unemployment rate coefficient indicates that as more people are unemployed, less pregnancies will result. For us, this is an intuitive result. 
+
+In terms of future work, we feel the earnings data set was too broad in the sense that it applied to women at all education levels and one large age range. Focusing this data set, possibly including multiple variables across various education levels/age ranges, would be area which could yield significance. Additionally, determining an appropriate factor for capturing population growth seems like an important next step. Our model appearst to capture the United States holiday season between Thanksgiving and New Year's Day. Generalizing this somehow for culture agnostic modeling is another area for possible improvement.
+
 
 # Appendix: Supplemental Tables & Figures
 
-```{r, echo=FALSE, fig.height=3, fig.cap="Significant Limited Model vs Validation Set"}
+## Visualization: Model vs Validation Set
+
+The following plots show visually the performance of the significant models against the validation data set.
+
+```{r, echo=FALSE, fig.height=3}
 gPdSigLimVarsCV
 ```
 
-```{r, echo=FALSE, fig.height=3, fig.cap="Poisson Significant Limited Model vs Validation Set"}
+```{r, echo=FALSE, fig.height=3}
 gPdPmSigLimVarsCV
 ```
 
@@ -400,6 +408,13 @@ gPdPmSigLimVarsCV
 * Pink = Model Prediction
 
 # Appendix: Raw Code
+
+```{r, code=readLines("../Project/NatalityModels-DataLoadFuncs.R"), eval=FALSE, highlight=FALSE}
+```
+
+```{r, code=readLines("../Project/Project-RawCode-dwd.R"), eval=FALSE, highlight=FALSE}
+```
+
 
 # References
 
