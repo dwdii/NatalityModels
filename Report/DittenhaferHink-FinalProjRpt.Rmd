@@ -183,11 +183,9 @@ Unemployment data (U3) was acquired from the Bureau of Labor Statistics. The dat
 
 We conducted exploratory data analysis to better understand the relationships in the data including correlations, feature distributions and basic summary statistics. 
 
-
-
 ## Model Development
 
-Eleven models were developed and examined for significance using a subset (80%) of the original full data set. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
+Ten models were developed and examined for significance using a subset (80%) of the original full data set. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
 
 ## Model Validation
 
@@ -243,7 +241,7 @@ grid.arrange(vF25[[3]], vF35[[3]], ncol=2)
 
 ## Model Development
 
-We started with all possible predictor variables from our data sets in an ordinary least squares linear model. This model yielded a adjusted \(R^2\) of `r round(smLmAllVars$adj.r.squared, 5)`, but had significant variance inflation factor issues (> 120,000,000). 
+We started with all possible predictor variables from our data sets in a multiple linear regression model. This model yielded an adjusted \(R^2\) of `r round(smLmAllVars$adj.r.squared, 5)`, but had significant variance inflation factor issues (> 120,000,000). 
 
 Next, we took the significant predictors from the "All Variables" model and created a new, smaller model. Again, VIFs were large. Specifically, the population bins were highly related.
 
@@ -251,13 +249,35 @@ Next, we took the significant predictors from the "All Variables" model and crea
 kable(vfSigVars)
 ```
 
-A new model using guidance from the correlation analysis yielded our "High Correlation Variables" linear model. VIFs were better, but still well above our threshold of 10. Our fourth model was created using the R's *step* function. The "Step" model had an impressive adjusted \(R^2\) of `r round(smLmStep$adj.r.squared, 5)` for only 5 predictor variables. The variance inflation factors were improved, but unfortunately, still exceeded our threshold.
+A new model using guidance from the correlation analysis yielded our "High Correlation Variables" linear model. VIFs were better, but still well above our threshold of 10. Our fourth model was created using R's *step* function. The "Step" model had an impressive adjusted \(R^2\) of `r round(smLmStep$adj.r.squared, 5)` for only 5 predictor variables (all significant at \(\alpha < 0.05\)). The variance inflation factors were improved, but unfortunately, still exceeded our threshold.
 
-Next, we experimented with a revised "Significant Variables Minus" model which was based on the "Significant Variables" model but with three high VIF variables removed. 
+Next, we experimented with a revised "Significant Variables Minus" model which was based on the "Significant Variables" model but with three high VIF variables removed. Again, we saw high VIFs. Around this time, the relationship between the female age bins and earnings, and its impact on our data analysis became apparent.
+
+A review of the variables and the introduction of a lag variable, \(Month9Ago = Month - 9\), brought us to the next model, "Significant Limited". Again a multiple linear regression model, the "Significant Limited" model included 4 significant variables with an adjusted \(R^2 = `r round(smLmSigLimVars$adj.r.squared, 5)`\) and no VIF issues. This was promising, but we continued our investigation of possible models.
+
+```{r modelLM-siglimited-coef, echo=FALSE, tab.cap="Significant Variables Limited Linear Model Coefficient Estimates"}
+kable(coefficientsPrep(smLmSigLimVars))
+```
+
+```{r, vif-siglimited, echo=FALSE, tab.cap="Significant Variables Limited Linear Model VIFs"}
+kable(vfSigLimVars)
+```
+
+A Poisson generalized linear model version of the "Significant Limited"" model was produced next. Like its sister model, the "Poisson Significant Ltd" looked good.
+
+```{r modelPM-pmsiglim-coef, echo=FALSE, tab.cap="Poisson Significant Limited Model Coefficient Estimates"}
+kable(coefficientsPrep(smPmSigLimVars))
+```
+
+A component we felt was missing was interaction between population and month. We again developed a model based on the "Signifcant Limited" model, but this time included an interaction term for *FEMALE_25_34* and *Month9Ago*. This did not perform as we anticipated and instead introduced VIF issues without any predictive benefit.
+
+For our final two models we used R's *stepAIC* to produce Poission and Negative Binomial generalized linear models, respectively.  The "Negative Binomial Step" looked promising also with 6 predictor variables, all but one significant, and no VIF issues.
 
 ## Model Validation
 
-As mentioned earlier, a validation data set was reserved for use confirming the performance of each of the developed models. The results of the multiple linear regression model validation are shown below.
+As mentioned earlier, a validation data set was reserved for use confirming the performance of each of the developed models. We ran each of the ten previously described models through the validation data and computed the mean squared error (MSE) of the resulting model output. We also captured the Akaike Information Criterion (AIC) for each of the models for reference.
+
+The results of the multiple linear regression model validation are shown below. 
 
 ```{r table-lm-cverror, echo=FALSE, tab.cap="Linear Model Validation Error Results"}
 cvLmResults <- cvLmResults[order(cvLmResults$Val.Error, decreasing=FALSE),]
@@ -266,9 +286,118 @@ rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```
 
+The variance inflation factor issues limited us to the "Significant Limited" and "Poisson Significant Ltd" models for further investigation. They have the least complex models and were in the median range in terms of validation performance although the AIC value for the "Poisson Significant Ltd" was strangely high.
+
+### In Depth: Significant Limited Linear Model
+
+The Significant Limited model has an F-statistic of `r round(smLmSigLimVars$fstatistic[1], 2)` and a mean squared error (MSE) of `r round(mse(smLmSigLimVars),2)`.
+
+\[
+  \begin{array}{llll}
+      y_{births} = & `r lmSigLimVars$coefficients[1]` & +`r lmSigLimVars$coefficients[2]` x_{Month}  &   \\
+                   &  & + `r lmSigLimVars$coefficients[3]` x_{Month9Ago}  & \\
+                   &  & `r lmSigLimVars$coefficients[4]` x_{FEMALE\_25\_34}  & \\
+                   &  & `r lmSigLimVars$coefficients[5]` x_{UnemploymentRate} &  
+  \end{array}
+\]
+
+We can interpret the coefficients in the following manner. Holding all other predictors constant, for variable:
+
+* *Month*, as the month of the year increased,  a \(`r round(abs(smLmSigLimVars$coefficients[2]), 2)`\) increase in births would occur.
+* *Month9Ago*, as the 9 month lagged month of the year increased, a \(`r round(abs(smLmSigLimVars$coefficients[3]), 2)`\) increase in births would occur.
+* *FEMALE_25_34*, a unit increase in the population of females age 25-34 would yield a \(`r round(abs(smLmSigLimVars$coefficients[4]), 2)`\) decrease in births.
+* *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(`r round(abs(smLmSigLimVars$coefficients[5]), 2)`\) decrease in births.
+
+
+Linear regression diagnostic plots are shown below. Residuals appear to be normally distributed and variance seems to be fairly constant. 
+
+```{r diagplots-sigcor, fig.height=5.5, echo=FALSE}
+#qqnorm(lmStep$residuals)
+#qqline(lmStep$residuals)  # adds diagonal line to the normal prob plot
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+plot(lmSigLimVars)
+```
+
+Looking at the inverse response plot, there does appear to be a good linear pattern to the predicted response versus actual.
+
+```{r, echo=FALSE, fig.height=3}
+g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(lmSigLimVars))) +
+  geom_point(aes(x=y, y=y.hat)) +
+  myTheme +
+  labs(title="Inverse Response Plot")
+g1
+```
+
+Again, running an auto-correlation analysis with R's *acf* function shows a possible auto-correlation issue with lag 2 and 6.
+
+```{r autocor-sigcor, echo=FALSE, fig.height=3}
+acf(lmSigLimVars$residuals, main="Significant Limited Linear Model Auto-correlation Plot")
+```
+
+
+
+### In Depth: Poisson Significant Limited Model
+
+The mathematical form of the Poisson Significant Limited Model is as follows:
+
+\[
+  \begin{array}{llll}
+       log\left(E(y_{births} | x)\right) = & `r pmSigLimVars$coefficients[1]` & +`r pmSigLimVars$coefficients[2]` x_{Month}  &   \\
+                   &  & + `r pmSigLimVars$coefficients[3]` x_{Month9Ago}  & \\
+                   &  & `r pmSigLimVars$coefficients[4]` x_{FEMALE\_25\_34}  & \\
+                   &  & `r pmSigLimVars$coefficients[5]` x_{UnemploymentRate} &  
+  \end{array}
+\]
+
+We can interpret the coefficients in the following manner. Holding all other predictors constant, for variable:
+
+* *Month*, as the month of the year increased,  a \(e^{`r pmSigLimVars$coefficients[2]`} = `r exp(pmSigLimVars$coefficients[2])`\) times increase in births would occur.
+* *Month9Ago*, as the 9 month lagged month of the year increased, a \(e^{`r pmSigLimVars$coefficients[3]`} = `r exp(pmSigLimVars$coefficients[3])`\) times increase in births would occur.
+* *FEMALE_25_34*, a unit increase in the population of females age 25-34 would yield a \(e^{`r pmSigLimVars$coefficients[4]`} = `r exp(pmSigLimVars$coefficients[4])`\) times decrease in births.
+* *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(e^{`r pmSigLimVars$coefficients[5]`} = `r exp(pmSigLimVars$coefficients[5])`\) times decrease in births.
+
+
+Regression diagnostic plots are shown below. Residuals appear to be normally distributed and variance seems to be fairly constant. The Leverage plot in the lower right shows many points which exceed Cook's distance and suggest points of high leverage.
+
+```{r diagplots-psigltd, fig.height=5.5, echo=FALSE}
+#qqnorm(lmStep$residuals)
+#qqline(lmStep$residuals)  # adds diagonal line to the normal prob plot
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+plot(pmSigLimVars)
+```
+
+Looking at the inverse response plot, there does appear to be a good linear pattern to the predicted response versus actual.
+
+```{r, inverse-psigltd, echo=FALSE, fig.height=3}
+g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(pmSigLimVars, type="response"))) +
+  geom_point(aes(x=y, y=y.hat)) +
+  myTheme +
+  labs(title="Inverse Response Plot")
+g1
+```
+
+Again, running a more targeted auto-correlation analysis with R's *acf* function shows the same possible auto-correlation issue with lag 2 and 6.
+
+```{r autocor-psigltd, echo=FALSE, fig.height=3}
+acf(pmSigLimVars$residuals, main="Significant Limited Poisson Model Auto-correlation Plot")
+```
+
+
+
 # Summary
 
 # Appendix: Supplemental Tables & Figures
+
+```{r, echo=FALSE, fig.height=3, fig.cap="Significant Limited Model vs Validation Set"}
+gPdSigLimVarsCV
+```
+
+```{r, echo=FALSE, fig.height=3, fig.cap="Poisson Significant Limited Model vs Validation Set"}
+gPdPmSigLimVarsCV
+```
+
+* Green = Validation Set
+* Pink = Model Prediction
 
 # Appendix: Raw Code
 

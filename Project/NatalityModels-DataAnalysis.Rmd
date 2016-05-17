@@ -346,7 +346,7 @@ kable(coefficientsPrep(smNbmStepAIC))
 ```
 
 ```{r, vif-nbmstep, echo=FALSE, tab.cap="Negative Binomial Step Model VIFs"}
-kable(vifNbm)
+kable(vifStepNbm)
 ```
 
 
@@ -386,7 +386,7 @@ We can interpret the coefficients in the following manner. Holding all other pre
 * *UnemploymentRate*, a unit increase in the *UnemploymentRate* related to a \(`r round(abs(smLmSigLimVars$coefficients[5]), 2)`\) decrease in births.
 
 
-Linear regression diagnostic plots are shown below. Residuals appear to be normally distributed and variance seems to be fairly constant. There are definitely some outliers which the model is not capturing.
+Linear regression diagnostic plots are shown below. Residuals appear to be normally distributed and variance seems to be fairly constant.
 
 ```{r diagplots-sigcor, fig.height=5.5, echo=FALSE}
 #qqnorm(lmStep$residuals)

@@ -259,9 +259,10 @@ vifNbm <- faraway::vif(nbm)
 stepNbm <- stepAIC(nbm, direction="backward", trace=0)
 #stepNbm$anova 
 
+
 nbmStepAICSuggested <- glm.nb(Births ~ Month + TOT_POP + GenderRatio + FEMALE_25_34 + UnemploymentRate + 
                                 Month9Ago, data=modelData)
-
+vifStepNbm <- faraway::vif(nbmStepAICSuggested)
 smNbmStepAIC <- summary(nbmStepAICSuggested)
 
 # AR
