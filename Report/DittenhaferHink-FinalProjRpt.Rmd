@@ -95,6 +95,18 @@ bibGitHub <- bibentry(bibtype="Misc",
                       year=2016,
                       url="https://github.com/dwdii/NatalityModels")
 
+bibGregory <- bibentry(bibtype="Article",
+                       title="A Simultaneous Equation Model of Birth Rates in the United States",
+                 author=personList(person(family="Gregory", given="Paul R."),
+                                   person(family="Campbell", given="John M."),
+                                   person(family="Cheng", given="Benjamin S.")),
+                 journal="The Review of Economics and Statistics",
+                 publisher="The MIT Press",
+                 year=1972,
+                 doi="10.2307/1924564",
+                 url="http://www.jstor.org/stable/1924564",
+                 volume="54")
+
 ```
 
 # Abstract
@@ -107,30 +119,30 @@ natality, births, demographic theory
 
 # Literature Review
 
-As a starting point for this study, Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States. Dittenhafer found a negative relationship between births and unemployment during the time period studied of 2007 - 2012 `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. Although the unemployment-based model showed some interesting analysis, its usefulness is still to be determined. On the other hand, the negative relationship finding appears to be a relavent output of the study, and one which our current research supports.
+As a starting point for this study, Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States. Dittenhafer found a negative relationship between births and unemployment during the time period studied of 2007 - 2012 `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. Although the unemployment-based model showed some interesting analysis, its usefulness is still to be determined. On the other hand, the negative relationship finding appears to be a relavent output of the study, and one which our current research supports. Interestingly, a paper by Gregory, et al from 1972 also studied unemployment rate as an explanatory variable of birth rates, but found it to not be significant `r citep(bibGregory)`.
 
 Morgan and Taylor published a paper in The Annual Review of Sociology regarding recent fertility trends, and specifically a shift to lower birth rates as compared to the second half of the twentieth century `r citep(bibSpMorg21)`. Our research did not relate to this directly, but further reductions in births were observed beginning in 2008. This may constitute another change point or may be a continuation of the trend studied by Morgan and Taylor.
 
-We include women's earnings as a possible predictor in this study based on research by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. Across all women, women's education, men's education, men's earnings and metro area were all found to be significant in age-specific fertility regression. We were not able to include age specific earnings, but rather a single earnings measure for women of child bearing age `r citep(bibEarnings)`.
+We include women's earnings as a possible predictor in this study based on research by Aliaksandr Amialchuk regarding wage related effects on fertility `r citep(bibRelWage)`. Across all women, women's education, men's education, men's earnings and metro area were all found to be significant in age-specific fertility regression. We were not able to include age specific earnings in our current study, but rather have a single earnings measure for women of child bearing age `r citep(bibEarnings)`.  On a related note, Gregory et al used female labor force participation rate as an indicator of the cost of a mother's time. More participation would suggest lower births in their model. 
 
 # Methodology
 
 ## Technology
 
-We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model deveopment, validation and selection. A GitHub repository was setup to facilitate collaboration amoungst the team, as well as to share our work in the spirit of reproducible research.
+We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model development, validation and selection. A GitHub repository was setup to facilitate collaboration amoungst the team, as well as to share our work in the spirit of reproducible research `r citep(bibGitHub)`.
 
 ## Data Preparation
 
-Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics identified and downloaded to our project GitHub repository `r citep(bibGitHub)`. These data sets were subsequently joined together in order to provide a unified data set for analysis and modeling. 
+Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were identified and downloaded to our project GitHub repository. These data sets were subsequently joined together in order to provide a unified data set for analysis and modeling. 
 
 ### Natality Data
 
-The natality data including birth counts per month were acquired from the Centers for Disease Control and Prevention in two data sets. The first data set contained data for the years 2003 - 2006 `r citep(bibNatality0306)`. The second data set contained data for the years 2007 - 2014 `r citep(bibNatality0714)`. The data sets were merged together and augmented with additional census, earning and unemployment data as described in the following sections. 
+The natality data, which includes birth counts per month, was acquired from the Centers for Disease Control and Prevention in two data sets. The first data set contains data for the years 2003 - 2006 `r citep(bibNatality0306)`. The second data set contains data for the years 2007 - 2014 `r citep(bibNatality0714)`. The data sets were merged together and augmented with additional census, earning and unemployment data as described in the following sections. 
 
 ### Census Data
 
-For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. The age data was in whole year granulatity and we
-created 10 year buckets for the female population by age: 15-24, 25-34, and 35-44.
+For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. The age data was in whole year granulatity (i.e. 5 females age 10, 4 females age 11). We
+created 3 buckets (10 years each) for the female population by age: 15-24, 25-34, and 35-44.
 
 For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau's 2000 - 2010 time period (converted to ratios) to divide the monthly total population into age and gender bins as shown in the following expressions:
 
@@ -191,7 +203,7 @@ Ten models were developed and examined for significance using a subset (80%) of 
 
 ## Model Validation
 
-A validation data set (VS) was created from a subset of the full data set (20%). This VS data set was used to test how well our candidate models generalize to unseen data. The validation metric for the multiple linear regression models is the mean squared error from the validation set. 
+A validation data set (VS) was created from a subset of the full data set (20%). This VS data set was used to test how well our candidate models generalize to unseen data. The validation metric for the linear models is the mean squared error from the validation set. 
 
 # Results 
 
@@ -232,7 +244,7 @@ v1 <- exploreVar(allData, "Earnings", "Births", xunit="$")
 v1[[3]]
 ```
 
-As part of variance inflation factor (VIF) analysis, we found that the earnings measure we used was correlated with female population levels. As shown, in some cases this was a positive relationship (both 15-24 and 25-34), but for the 35-44 age range this was a negative relationship. In general, these relationship resulted in VIFs which significantly exceeded 10 when earnings and the female age values were included in a model. Further study on this relationship may be warranted inorder to better understand the drivers.
+As part of variance inflation factor (VIF) analyses, we found that the earnings measure we used was correlated with female population levels. As shown, in some cases this was a positive relationship (both 15-24 and 25-34), but for the 35-44 age range this was a negative relationship. In general, these relationships resulted in VIFs which significantly exceeded 10 when earnings and the female age values were included in a model. Further study on this relationship may be warranted inorder to better understand the drivers.
 
 ```{r earnings-fm15-fm25-viz, echo=FALSE, warning=FALSE, fig.height=2.5, fig.cap="Earnings vs Female Population 25-34 and 35-44"}
 vF15 <- exploreVar(allData, "Earnings", "FEMALE_15_24", xunit="$")
