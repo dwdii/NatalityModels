@@ -119,7 +119,7 @@ natality, births, demographic theory
 
 # Literature Review
 
-As a starting point for this study, Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States. Dittenhafer found a negative relationship between births and unemployment during the time period studied of 2007 - 2012 `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. Although the unemployment-based model showed some interesting analysis, its usefulness is still to be determined. On the other hand, the negative relationship finding appears to be a relavent output of the study, and one which our current research supports. Interestingly, a paper by Gregory, et al from 1972 also studied unemployment rate as an explanatory variable of birth rates, but found it to not be significant `r citep(bibGregory)`.
+As a starting point for this study, Daniel Dittenhafer has done prior work analyzing births and unemployment rate in the United States. Dittenhafer found a negative relationship between births and unemployment during the time period studied of 2007 - 2012 `r citep(bibDittenhafer)`. Dittenhafer's single predictor linear model using unemployment rate alone yielded an adjusted \(R^2\) of 0.296 with a p-value approaching 0. Although the unemployment-based model showed some interesting analysis, its usefulness is still to be determined. On the other hand, the negative relationship finding appears to be a relevant output of the study, and one which our current research supports. Interestingly, a paper by Gregory, et al from 1972 also studied unemployment rate as an explanatory variable of birth rates, but found it to not be significant `r citep(bibGregory)`.
 
 Morgan and Taylor published a paper in The Annual Review of Sociology regarding recent fertility trends, and specifically a shift to lower birth rates as compared to the second half of the twentieth century `r citep(bibSpMorg21)`. Our research did not relate to this directly, but further reductions in births were observed beginning in 2008. This may constitute another change point or may be a continuation of the trend studied by Morgan and Taylor.
 
@@ -129,11 +129,13 @@ We include women's earnings as a possible predictor in this study based on resea
 
 ## Technology
 
-We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model development, validation and selection. A GitHub repository was setup to facilitate collaboration amoungst the team, as well as to share our work in the spirit of reproducible research `r citep(bibGitHub)`.
+We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model development, validation and selection.  The primary reason for this was the large number of libraries available for both the data cleaning and analysis parts of the project. The work should be portable to other data anlaysis languages (such as Python/numpy/pandas) without a large amount of effort.
+
+A GitHub repository was setup to facilitate collaboration amoungst the team, as well as to share our work in the spirit of reproducible research `r citep(bibGitHub)`.
 
 ## Data Preparation
 
-Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were identified and downloaded to our project GitHub repository. These data sets were subsequently joined together in order to provide a unified data set for analysis and modeling. 
+Data sets from the Census Bureau, Centers for Disease Control, and Bureau of Labor Statistics were identified and downloaded to our project GitHub repository. These data sets were programatically joined together in order to provide a unified data set for analysis and modeling. 
 
 ### Natality Data
 
@@ -141,8 +143,7 @@ The natality data, which includes birth counts per month, was acquired from the 
 
 ### Census Data
 
-For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. The age data was in whole year granulatity (i.e. 5 females age 10, 4 females age 11). We
-created 3 buckets (10 years each) for the female population by age: 15-24, 25-34, and 35-44.
+For the period of May 2010 - Decemeber 2015, the Census Bureau's census data was available as monthly population estimates broken down by age and gender `r citep(bibCensus2015)`. The age data was in whole year granulatity (i.e. 5 females age 10, 4 females age 11). We created 3 buckets (10 years each) for the female population by age: 15-24, 25-34, and 35-44.
 
 For the period of 2000 - April 2010, monthly population estimates were only available for the total population `r citep(bibCensus2000)`. We used annual age and gender estimates from the Census Bureau's 2000 - 2010 time period (converted to ratios) to divide the monthly total population into age and gender bins as shown in the following expressions:
 
@@ -199,7 +200,7 @@ We conducted exploratory data analysis to better understand the relationships in
 
 ## Model Development
 
-Ten models were developed and examined for significance using a subset (80%) of the original full data set. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
+Ten models were developed and examined for significance using a training subset (80%) of the original full data. Gaussian, Poisson and Negative Binomial linear models were fit using a variety of predictor variables and their significance, VIFs, adjusted \(R^2\) and Akaike information criteria (AIC) were examined.
 
 ## Model Validation
 
@@ -219,7 +220,7 @@ kable(corMatrix[order(corMatrix[,"Births"], decreasing=TRUE), c("Births")])
 
 ### Seasonality
 
-As one might expect, we saw seasonality in the birth data. As shown in the scatter plot, below, August is a very popular month for births. July and September are close behind. This suggests that many conceptions are occuring during the United States holiday season between Thanksgiving and New Years.
+As one might expect, seasonality is quite apparent in the birth data. As shown in the scatter plot, below, August is a very popular month for births. July and September are close behind. This suggests that many conceptions are occuring during the United States holiday season between Thanksgiving and New Years.
 
 ```{r month-viz, echo=FALSE, warning=FALSE, fig.height=3, fig.width=6.5, fig.cap="Month vs Births"}
 v1 <- exploreVar(allData, "Month", "Births")
@@ -228,7 +229,7 @@ v1[[3]]
 
 ### Gender Ratio
 
-The computed gender ratio which was used to enable the gender buckets for the period of 2003 - 2010 can be seen in the scatterplot below. For these years, the gender ratio is constant for all months of a given year while the birth counts fluctuate. Interestingly, the proportion of females has been dropping steadily, though only slightly during the time period being studied.
+The computed gender ratio which was used to enable the gender buckets for the period of 2003 - 2010 can be seen in the scatterplot below. For these years, the gender ratio is constant for all months of a given year while the birth counts fluctuate. Interestingly, the proportion of females has been dropping steadily, though only slightly during the time period in this study.
 
 ```{r genderratio-viz, echo=FALSE, warning=FALSE, fig.height=2.5, fig.cap="GenderRatio vs Date, GenderRatio vs Births"}
 v1 <- exploreVar(allData, "GenderRatio", "Births", xunit="% female", rotateLabels=FALSE)
@@ -244,7 +245,7 @@ v1 <- exploreVar(allData, "Earnings", "Births", xunit="$")
 v1[[3]]
 ```
 
-As part of variance inflation factor (VIF) analyses, we found that the earnings measure we used was correlated with female population levels. As shown, in some cases this was a positive relationship (both 15-24 and 25-34), but for the 35-44 age range this was a negative relationship. In general, these relationships resulted in VIFs which significantly exceeded 10 when earnings and the female age values were included in a model. Further study on this relationship may be warranted inorder to better understand the drivers.
+As part of variance inflation factor (VIF) analyses, we found that the earnings measure we used was correlated with female population levels. As shown, in some cases this was a positive relationship (both 15-24 and 25-34), but for the 35-44 age range this was a negative relationship. In general, these relationships resulted in VIFs which significantly exceeded our threshold of 10 when earnings and the female age values were included in a model. Further study on this relationship may be warranted in order to better understand the drivers behind this effect.
 
 ```{r earnings-fm15-fm25-viz, echo=FALSE, warning=FALSE, fig.height=2.5, fig.cap="Earnings vs Female Population 25-34 and 35-44"}
 vF15 <- exploreVar(allData, "Earnings", "FEMALE_15_24", xunit="$")
@@ -300,7 +301,7 @@ rownames(cvLmResults) <- seq(1, nrow(cvLmResults))
 kable(cvLmResults)
 ```
 
-The variance inflation factor issues limited us to the "Significant Limited" and "Poisson Significant Ltd" models for further investigation. They have the least complex models and were in the median range in terms of validation performance although the AIC value for the "Poisson Significant Ltd" was strangely high.
+The variance inflation factor issues limited us to the "Significant Limited" and "Poisson Significant Ltd" models for further investigation. These models were the least complex and were in the median range in terms of validation performance.  One unexepected negative was that the  AIC value for the "Poisson Significant Ltd" model was higher than anticipated.
 
 ### In Depth: Significant Limited Linear Model
 
@@ -332,7 +333,7 @@ layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
 plot(lmSigLimVars)
 ```
 
-Looking at the inverse response plot, there does appear to be a good linear pattern to the predicted response versus actual.
+Looking at the inverse response plot, there appears to be a strong linear pattern to the predicted response versus actual. This is a desirable relationship.
 
 ```{r, echo=FALSE, fig.height=3}
 g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(lmSigLimVars))) +
@@ -380,7 +381,7 @@ layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
 plot(pmSigLimVars)
 ```
 
-Looking at the inverse response plot, there does appear to be a good linear pattern to the predicted response versus actual.
+Looking at the inverse response plot, there again appears to be a very visible linear pattern to the predicted response versus actual.
 
 ```{r, inverse-psigltd, echo=FALSE, fig.height=3}
 g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(pmSigLimVars, type="response"))) +
@@ -390,7 +391,7 @@ g1 <- ggplot(data.frame(y=modelData$Births, y.hat=predict(pmSigLimVars, type="re
 g1
 ```
 
-Again, running the auto-correlation analysis with R's *acf* function shows the same possible auto-correlation issue with lag 2 and 6.
+Running the auto-correlation analysis with R's *acf* function shows the same possible auto-correlation issue with lag 2 and 6 that we saw with the Significant Limited Linear Model.
 
 ```{r autocor-psigltd, echo=FALSE, fig.height=3}
 acf(pmSigLimVars$residuals, main="Significant Limited Poisson Model Auto-correlation Plot")
@@ -410,7 +411,7 @@ In terms of future work, we feel the earnings data set was too broad in the sens
 
 ## Visualization: Model vs Validation Set
 
-The following plots show visually the performance of the significant models against the validation data set.
+The following plots show visually the performance of the two selected models against the validation data set.
 
 ```{r, echo=FALSE, fig.height=3}
 gPdSigLimVarsCV
