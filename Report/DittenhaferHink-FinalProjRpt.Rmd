@@ -107,6 +107,35 @@ bibGregory <- bibentry(bibtype="Article",
                  url="http://www.jstor.org/stable/1924564",
                  volume="54")
 
+bibMASS <- bibentry(bibtype="Misc",
+                    title="Modern Applied Statistics with S",
+                    author=personList(person(family="Venables", given="W. N."),
+                                      person(family="Ripley", given="B. D.")),
+                    publisher="Springer",
+                    edition="fourth",
+                    address="New York",
+                    year=2002,
+                    url = "http://www.stats.ox.ac.uk/pub/MASS4",
+                    note="ISBN 0-387-95457-0")
+
+bibGgplot <- bibentry(bibtype="Misc",
+                      author = person(family="Wickkham", given="Hadley"),
+                      title = "ggplot2: Elegant Graphics for Data Analysis",
+                      publisher = "Springer-Verlag New York",
+                      year = 2009,
+                      isbn = "978-0-387-98140-6",
+                      url = "http://ggplot2.org")
+
+bibPlyr <- bibentry(bibtype="Misc", 
+    title = "The Split-Apply-Combine Strategy for Data Analysis",
+    author = person(family="Wickkham", given="Hadley"),
+    journal = "Journal of Statistical Software",
+    year = 2011,
+    volume = 40,
+    number = 1,
+    pages = "1--29",
+    url = "http://www.jstatsoft.org/v40/i01/")
+
 ```
 
 # Abstract
@@ -129,7 +158,7 @@ We include women's earnings as a possible predictor in this study based on resea
 
 ## Technology
 
-We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model development, validation and selection.  The primary reason for this was the large number of libraries available for both the data cleaning and analysis parts of the project. The work should be portable to other data anlaysis languages (such as Python/numpy/pandas) without a large amount of effort.
+We used the R runtime via RStudio as our primary environment for all data steps including data preparation, exploration, analysis, model development, validation and selection.  The primary reason for this was the large number of libraries available for both the data cleaning and analysis parts of the project `r citep(bibMASS)`, `r citep(bibGgplot)` `r citep(bibPlyr)`. The work should be portable to other data anlaysis languages (such as Python/numpy/pandas) without a large amount of effort.
 
 A GitHub repository was setup to facilitate collaboration amoungst the team, as well as to share our work in the spirit of reproducible research `r citep(bibGitHub)`.
 
@@ -273,6 +302,8 @@ A review of the variables and the introduction of a lag variable, \(Month9Ago = 
 ```{r modelLM-siglimited-coef, echo=FALSE, tab.cap="Significant Variables Limited Linear Model Coefficient Estimates"}
 kable(coefficientsPrep(smLmSigLimVars))
 ```
+
+\pagebreak 
 
 ```{r, vif-siglimited, echo=FALSE, tab.cap="Significant Variables Limited Linear Model VIFs"}
 kable(vfSigLimVars)

@@ -367,9 +367,3 @@ gPdPmSigLimVarsCV <- ggplot(pdCVDataPm) +
   geom_line(aes(x=Date, y=Births), colour="lightgreen", size=1) + myTheme +
   labs(title="Poisson Signif Limited Model vs Validation Set", y="Births")
 
-
-#library(leaps)
-#lmSubsCdc <- leaps::regsubsets(Births ~ Month.Code + Age.of.Mother + Marital.Status + Education, data=allBirthData)
-#summary(lmSubsCdc)
-
-#step(lmCdc)
